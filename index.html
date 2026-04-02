@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>Transcrição Móvel Acessível | Deficiência Auditiva</title>
+    <title>Transcrição Móvel - Sem Repetições | Acessível</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
@@ -220,7 +220,7 @@
 <body>
 <div class="container">
     <h1>🎙️ Transcrição Móvel</h1>
-    <div class="sub">✔️ Alto contraste | Pausas >1.5s = novo parágrafo | Otimizado para celular</div>
+    <div class="sub">✔️ Alto contraste | Pausas >1.5s = novo parágrafo | Sem repetições</div>
 
     <div id="notificationPanel" class="notification-panel">
         <div class="notification-message" id="notifText">✅ Toque em INICIAR e permita o microfone.</div>
@@ -258,7 +258,7 @@
         </div>
         <div id="interimDisplay" class="interim-box">🎙️ Reconhecimento provisório...</div>
     </div>
-    <footer>🔊 Web Speech API (pt-BR) | Reinício automático + manual | Chrome/Edge/Safari</footer>
+    <footer>🔊 Web Speech API (pt-BR) | Anti-duplicação ativa | Chrome/Edge/Safari</footer>
 </div>
 
 <script>
@@ -266,7 +266,7 @@
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const hasSupport = !!SpeechRecognition;
         
-        // Elementos
+        // Elementos DOM
         const startBtn = document.getElementById('startBtn');
         const pauseBtn = document.getElementById('pauseBtn');
         const stopBtn = document.getElementById('stopBtn');
@@ -284,20 +284,21 @@
         const exportPdfBtn = document.getElementById('exportPdfBtn');
         const toggleFullHistoryBtn = document.getElementById('toggleFullHistoryBtn');
         
-        // Estado principal
+        // Estado do reconhecimento
         let recognition = null;
         let isRecognizing = false;
-        let manualStop = false;      // true se usuário clicou em PARAR
-        let pauseRequested = false;   // pausa deliberada
+        let manualStop = false;
+        let pauseRequested = false;
         let autoRestartTimer = null;
         
         // Transcrição e parágrafos
         let paragraphs = [];
         let currentParagraph = "";
         let lastFinalTimestamp = null;
+        let lastFinalTextHash = "";      // hash da última frase final adicionada (evita duplicatas)
         const PAUSE_MS = 1500;
         
-        // Exibição
+        // Exibição (virtualização)
         let showFullHistory = false;
         const MAX_VISIBLE = 500;
         
@@ -307,28 +308,36 @@
         let pausedDuration = 0;
         let isTimerRunning = false;
         
-        // ========== FUNÇÕES DE UI ==========
+        // ========== FUNÇÕES AUXILIARES ==========
+        function simpleHash(str) {
+            // hash rápido para comparar frases curtas
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                hash = ((hash << 5) - hash) + str.charCodeAt(i);
+                hash |= 0;
+            }
+            return hash.toString();
+        }
+        
         function setNotification(msg, isError = false) {
             notifTextSpan.innerHTML = isError ? `⚠️ ${msg}` : `✅ ${msg}`;
             const panel = document.getElementById('notificationPanel');
             panel.style.borderLeftColor = isError ? "#ff6666" : "#ffaa33";
-            // Remove automaticamente após 8s se não for erro crítico?
-            if(!isError){
-                setTimeout(() => {
-                    if(notifTextSpan.innerHTML === `✅ ${msg}`) {
-                        // não apaga se já mudou
-                    }
-                }, 5000);
-            }
+            setTimeout(() => {
+                if(notifTextSpan.innerHTML === `✅ ${msg}` || notifTextSpan.innerHTML === `⚠️ ${msg}`) {
+                    // não apaga automaticamente para não perder avisos importantes
+                }
+            }, 5000);
         }
+        
         closeNotifBtn.addEventListener('click', () => setNotification("Notificação fechada", false));
         
         function formatSentence(s){
             if(!s) return "";
             let t = s.trim();
-            if(t==="") return "";
+            if(t === "") return "";
             t = t.charAt(0).toUpperCase() + t.slice(1);
-            if(!/[.!?]$/.test(t)) t+=".";
+            if(!/[.!?]$/.test(t)) t += ".";
             return t;
         }
         
@@ -341,15 +350,30 @@
             }
         }
         
+        // Adiciona frase com verificação de duplicata
         function addFinalSentence(sentence, nowTimestamp){
             if(!sentence.trim()) return;
             const formatted = formatSentence(sentence);
+            const newHash = simpleHash(formatted);
+            
+            // Evita duplicata exata consecutiva
+            if(lastFinalTextHash === newHash && (nowTimestamp - (lastFinalTimestamp || 0)) < 800) {
+                // Ignora repetição muito rápida (possível eco)
+                return;
+            }
+            
+            // Atualiza hash e timestamp
+            lastFinalTextHash = newHash;
+            lastFinalTimestamp = nowTimestamp;
+            
+            // Verifica pausa longa para novo parágrafo
             if(lastFinalTimestamp !== null && (nowTimestamp - lastFinalTimestamp) > PAUSE_MS){
                 finalizeCurrentParagraph();
             }
+            
             if(currentParagraph.length > 0) currentParagraph += " " + formatted;
             else currentParagraph = formatted;
-            lastFinalTimestamp = nowTimestamp;
+            
             renderTranscript();
         }
         
@@ -425,7 +449,7 @@
             timerDisplay.innerText = "00:00:00";
         }
         
-        // ========== REINICIALIZAÇÃO AUTOMÁTICA E FORÇADA ==========
+        // ========== REINICIALIZAÇÃO ==========
         function scheduleAutoRestart(){
             if(autoRestartTimer) clearTimeout(autoRestartTimer);
             if(!manualStop && !pauseRequested && !isRecognizing && hasSupport){
@@ -444,7 +468,6 @@
             }
         }
         
-        // Forçar reinício manual (útil quando o automático falha)
         function forceRestart(){
             if(recognition){
                 try { recognition.abort(); } catch(e){}
@@ -497,9 +520,9 @@
             };
             
             recognition.onerror = (event) => {
-                console.warn("Erro:", event.error);
+                console.warn("Erro Speech:", event.error);
                 let msg = "";
-                if(event.error === 'not-allowed') msg = "Permissão do microfone negada. Conceda acesso e tente novamente.";
+                if(event.error === 'not-allowed') msg = "Permissão do microfone negada. Conceda acesso.";
                 else if(event.error === 'no-speech') msg = "Nenhuma fala detectada. Verifique o microfone.";
                 else if(event.error === 'aborted') msg = "Reconhecimento abortado.";
                 else msg = `Erro: ${event.error}`;
@@ -507,7 +530,6 @@
                 if(event.error === 'not-allowed'){
                     stopRecognitionHard();
                 } else {
-                    // Não reinicia automaticamente se for 'abort' por causa de pausa manual
                     if(!manualStop && !pauseRequested) scheduleAutoRestart();
                 }
             };
@@ -516,32 +538,40 @@
                 isRecognizing = false;
                 micLed.classList.remove('active');
                 micStatusText.innerText = "🎤 Inativo";
-                finalizeCurrentParagraph(); // fecha parágrafo atual
+                finalizeCurrentParagraph();
                 if(!manualStop && !pauseRequested){
                     scheduleAutoRestart();
                 } else {
                     cancelAutoRestart();
                 }
-                // Se foi pausa ou stop, não reinicia
             };
             
+            // Controle de resultados para evitar duplicatas no celular
+            let lastProcessedIndex = -1;
             recognition.onresult = (event) => {
                 let finalBuffer = "";
                 let interimBuffer = "";
                 const now = performance.now();
+                
+                // Itera apenas sobre resultados novos (baseado em resultIndex)
                 for(let i = event.resultIndex; i < event.results.length; i++){
-                    const res = event.results[i];
-                    const chunk = res[0].transcript;
-                    if(res.isFinal){
-                        finalBuffer += chunk + " ";
+                    const result = event.results[i];
+                    const transcript = result[0].transcript;
+                    if(result.isFinal){
+                        finalBuffer += transcript + " ";
                     } else {
-                        interimBuffer += chunk;
+                        interimBuffer += transcript;
                     }
                 }
+                
+                // Processa frase final apenas se houver conteúdo novo
                 if(finalBuffer.trim() !== ""){
-                    addFinalSentence(finalBuffer.trim(), now);
+                    // Remove espaços extras
+                    let cleanFinal = finalBuffer.trim().replace(/\s+/g, ' ');
+                    addFinalSentence(cleanFinal, now);
                 }
                 updateInterimUI(interimBuffer.trim());
+                lastProcessedIndex = event.results.length - 1;
             };
             
             try {
@@ -585,6 +615,7 @@
                 paragraphs = [];
                 currentParagraph = "";
                 lastFinalTimestamp = null;
+                lastFinalTextHash = "";
                 renderTranscript();
                 updateInterimUI("");
                 setNotification("Histórico apagado.", false);
