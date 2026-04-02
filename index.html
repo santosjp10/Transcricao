@@ -1016,6 +1016,15 @@ body.theme-hc .tab-nav {
     <p class="api-hint">⚠️ A chave permanece apenas nesta aba — nunca enviada a terceiros.</p>
   </div>
 
+  <!-- Diagnóstico do dispositivo -->
+  <div class="card" id="diagCard">
+    <div class="card-title">Diagnóstico do Dispositivo</div>
+    <div id="diagContent" style="font-family:var(--font-mono);font-size:0.82rem;line-height:2;">
+      <span style="color:var(--text-muted);">Carregando…</span>
+    </div>
+    <button class="btn btn-neu btn-sm" style="margin-top:0.75rem;" onclick="runDiagnostic()">🔄 Atualizar Diagnóstico</button>
+  </div>
+
 </div><!-- /panel-config -->
 
 <!-- ══════════════════════════════════════════════════════
@@ -1261,6 +1270,12 @@ const S = {
   pauseAlertTimer:   null,
   editingPhrase:     false,
   autoSaveInterval:  null,
+  restartTimer:      null,   // backoff para reinício no mobile
+  networkRetries:    0,      // contador de retentativas de rede
+  // Detectar mobile: iOS Safari não suporta SpeechRecognition de forma alguma
+  isMobile: /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent),
+  isIOS:    /iPhone|iPad|iPod/i.test(navigator.userAgent),
+  isAndroid:/Android/i.test(navigator.userAgent),
 };
 
 /* ──────────────────────────────────────────────────────────────
@@ -1303,8 +1318,22 @@ const el = {
    ────────────────────────────────────────────────────────────── */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 if (!SR) {
-  setStatus('err', '⚠️ Web Speech API não suportada. Use o Google Chrome (versão 33+).');
-  el.btnStart.disabled = true;
+  // Mensagem diferenciada por plataforma
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  let warnMsg;
+  if (isIOS && isSafari) {
+    warnMsg = '⚠️ O Safari no iPhone/iPad <strong>não suporta</strong> a Web Speech API. '
+            + 'Use o <strong>Google Chrome para iOS</strong> ou acesse pelo computador.';
+  } else if (isIOS) {
+    warnMsg = '⚠️ Este navegador não suporta transcrição de voz no iOS. '
+            + 'Instale o <strong>Google Chrome</strong> e acesse novamente.';
+  } else {
+    warnMsg = '⚠️ Web Speech API não suportada. Use o <strong>Google Chrome</strong> (versão 33+).';
+  }
+  // Exibir após DOM estar pronto
+  setTimeout(() => setStatus('err', warnMsg), 100);
+  if (el.btnStart) el.btnStart.disabled = true;
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -1374,13 +1403,20 @@ function clearDict() { el.dictArea.value = ''; }
 async function initAudio(stream) {
   try {
     S.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Mobile: AudioContext começa "suspended" até interação do usuário
+    // Resume garante que o contexto esteja ativo após o getUserMedia
+    if (S.audioCtx.state === 'suspended') {
+      await S.audioCtx.resume();
+    }
     S.analyser = S.audioCtx.createAnalyser();
     S.analyser.fftSize = 256;
     const src = S.audioCtx.createMediaStreamSource(stream);
     src.connect(S.analyser);
     drawWaveform();
   } catch(e) {
-    console.warn('AudioContext não disponível:', e);
+    // AudioContext não é crítico — transcrição funciona sem ele
+    console.warn('AudioContext não disponível (waveform desabilitado):', e.message || e);
+    S.audioCtx = null; S.analyser = null;
   }
 }
 
@@ -1486,29 +1522,41 @@ async function startTranscription() {
 
   // Solicitar microfone + iniciar AudioContext
   // (este ponto é alcançado via clique do usuário — gesto válido)
+  // Tentar com constraints ideais primeiro; fallback para {audio:true} no mobile
+  const constraints = S.isMobile
+    ? { audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 16000 } }
+    : { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } };
+
   try {
-    S.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    await initAudio(S.mediaStream);
-  } catch(e) {
-    if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
-      showMicModal('denied');
-    } else if (e.name === 'NotFoundError' || e.name === 'NotReadableError'
-            || e.name === 'DevicesNotFoundError') {
-      showMicModal('unavailable');
-    } else if (e.name === 'SecurityError') {
-      showMicModal('insecure');
-    } else {
-      showMicModal('error', e.message || e.name);
+    S.mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+  } catch(e1) {
+    // Fallback: constraints mínimas — último recurso
+    try {
+      S.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch(e) {
+      if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+        showMicModal('denied');
+      } else if (e.name === 'NotFoundError' || e.name === 'NotReadableError'
+              || e.name === 'DevicesNotFoundError') {
+        showMicModal('unavailable');
+      } else if (e.name === 'SecurityError') {
+        showMicModal('insecure');
+      } else {
+        showMicModal('error', e.message || e.name);
+      }
+      return;
     }
-    return;
   }
+  await initAudio(S.mediaStream);
 
   const rec = new SR();
   S.recognition = rec;
   rec.lang            = 'pt-BR';
-  rec.continuous      = true;
+  // continuous=true não funciona de forma confiável no Android Chrome —
+  // o reconhecimento é reiniciado via onend quando necessário
+  rec.continuous      = !S.isMobile;
   rec.interimResults  = true;
-  rec.maxAlternatives = 3;   // pegar mais alternativas aumenta precisão
+  rec.maxAlternatives = S.isMobile ? 1 : 3; // mobile: 1 alt evita travamentos
 
   rec.onresult = e => {
     resetSilenceTimer();
@@ -1551,22 +1599,68 @@ async function startTranscription() {
   };
 
   rec.onend = () => {
-    if (S.isRecording && !S.isPaused) {
-      try { rec.start(); } catch(e) {}
-    }
+    if (!S.isRecording || S.isPaused) return;
+    // Backoff de 300ms — evita "InvalidStateError: already started" no Android
+    clearTimeout(S.restartTimer);
+    S.restartTimer = setTimeout(() => {
+      if (!S.isRecording || S.isPaused) return;
+      try {
+        rec.start();
+      } catch(e) {
+        // Se a instância expirou, criar nova
+        if (e.name === 'InvalidStateError') {
+          S.recognition = null;
+          startTranscription();
+        }
+      }
+    }, 300);
   };
 
   rec.onerror = e => {
-    const msgs = {
-      'not-allowed': '🚫 Microfone bloqueado. Permita o acesso e tente novamente.',
-      'no-speech':   '🔇 Nenhuma fala detectada. Continue falando…',
-      'audio-capture': '🎤 Microfone não encontrado.',
-      'network':     '🌐 Erro de rede — verifique sua conexão.',
-      'aborted':     '',
-    };
-    const msg = msgs[e.error] || '';
-    if (msg) setStatus('err', msg);
-    if (e.error === 'not-allowed') stopTranscription();
+    console.warn('[SpeechRecognition] erro:', e.error, e.message || '');
+
+    // 'aborted' é disparado normalmente no mobile ao reiniciar — ignorar
+    if (e.error === 'aborted') return;
+
+    // 'no-speech' no mobile: não parar — apenas atualizar status
+    if (e.error === 'no-speech') {
+      setStatus('rec', '🔇 Aguardando fala… (microfone ativo)');
+      return;
+    }
+
+    // 'network': tentar reiniciar automaticamente até 3x
+    if (e.error === 'network') {
+      S.networkRetries = (S.networkRetries || 0) + 1;
+      if (S.networkRetries <= 3) {
+        setStatus('err', `🌐 Erro de rede — tentando reconectar (${S.networkRetries}/3)…`);
+        return; // onend vai reiniciar
+      }
+      setStatus('err', '🌐 Sem conexão. A Web Speech API requer internet.');
+      stopTranscription();
+      return;
+    }
+
+    // 'not-allowed' ou 'service-not-allowed': permissão negada / serviço indisponível
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      stopTranscription();
+      if (e.error === 'service-not-allowed') {
+        // iOS Safari / Android sem HTTPS
+        showMicModal('insecure');
+      } else {
+        showMicModal('denied');
+      }
+      return;
+    }
+
+    // 'audio-capture': microfone ocupado por outro app
+    if (e.error === 'audio-capture') {
+      setStatus('err', '🎤 Microfone ocupado. Feche outros apps que usam o microfone e tente novamente.');
+      stopTranscription();
+      return;
+    }
+
+    const msg = e.message || e.error || 'Erro desconhecido';
+    setStatus('err', `❌ Erro no reconhecimento: ${msg}`);
   };
 
   try { rec.start(); } catch(e) {
@@ -1609,7 +1703,12 @@ function pauseTranscription() {
 function stopTranscription() {
   if (!S.isRecording) return;
   S.isRecording = false; S.isPaused = false;
-  if (S.recognition) { S.recognition.stop(); S.recognition = null; }
+  S.networkRetries = 0;
+  clearTimeout(S.restartTimer);
+  if (S.recognition) {
+    try { S.recognition.abort(); } catch(_) {}
+    S.recognition = null;
+  }
   stopAudio();
   setStatus('ok', `✅ Transcrição encerrada. ${S.sentences.length} frases · ${fmtTime(S.seconds)}`);
   setMic(false);
@@ -2231,6 +2330,10 @@ function switchTab(name) {
   if (name === 'audio') {
     setTimeout(() => { if (S.analyser) drawWaveform(); }, 50);
   }
+  // Rodar diagnóstico ao abrir Config
+  if (name === 'config') {
+    setTimeout(runDiagnostic, 50);
+  }
 
   // Limpar badge ao abrir a aba
   const badge = document.getElementById('badge-' + name);
@@ -2504,6 +2607,82 @@ function syncFab({ rec, pau }) {
 }
 
 /* ──────────────────────────────────────────────────────────────
+   DIAGNÓSTICO DO DISPOSITIVO
+   ────────────────────────────────────────────────────────────── */
+async function runDiagnostic() {
+  const el = document.getElementById('diagContent');
+  if (!el) return;
+
+  const rows = [];
+  const ok  = v => `<span style="color:var(--success)">✅ ${v}</span>`;
+  const err = v => `<span style="color:var(--danger)">❌ ${v}</span>`;
+  const warn= v => `<span style="color:var(--warning)">⚠️ ${v}</span>`;
+
+  // 1. Plataforma
+  const ua = navigator.userAgent;
+  rows.push(`📱 <b>Dispositivo:</b> ${S.isIOS ? 'iOS' : S.isAndroid ? 'Android' : 'Desktop'}`);
+  rows.push(`🌐 <b>Navegador:</b> ${ua.includes('Chrome') ? 'Chrome' : ua.includes('Firefox') ? 'Firefox' : ua.includes('Safari') ? 'Safari' : 'Outro'}`);
+
+  // 2. Protocolo (HTTPS obrigatório para mic no mobile)
+  const proto = location.protocol;
+  const isSecure = proto === 'https:' || location.hostname === 'localhost' || proto === 'file:';
+  rows.push(`🔒 <b>Protocolo:</b> ${isSecure ? ok(proto + '//' + location.hostname) : err(proto + ' — HTTPS obrigatório para microfone!')}`);
+
+  // 3. Web Speech API
+  const hasSR = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  rows.push(`🗣️ <b>Web Speech API:</b> ${hasSR ? ok('Suportada') : err('NÃO suportada neste navegador')}`);
+  if (S.isIOS && /Safari/.test(ua) && !/Chrome/.test(ua)) {
+    rows.push(`&nbsp;&nbsp;&nbsp;${err('Safari no iOS não suporta SpeechRecognition. Use Chrome para iOS.')}`);
+  }
+
+  // 4. MediaDevices API
+  const hasGUM = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+  rows.push(`🎙️ <b>MediaDevices API:</b> ${hasGUM ? ok('Disponível') : err('NÃO disponível')}`);
+
+  // 5. Estado da permissão
+  if (navigator.permissions) {
+    try {
+      const p = await navigator.permissions.query({ name: 'microphone' });
+      const stateMap = {
+        granted: ok('Permitido'),
+        denied:  err('Negado — desbloquear nas configurações do navegador'),
+        prompt:  warn('Não solicitado ainda'),
+      };
+      rows.push(`🔐 <b>Permissão de mic:</b> ${stateMap[p.state] || warn(p.state)}`);
+    } catch(_) {
+      rows.push(`🔐 <b>Permissão de mic:</b> ${warn('Não verificável (Permissions API indisponível)')}`);
+    }
+  } else {
+    rows.push(`🔐 <b>Permissão de mic:</b> ${warn('Permissions API não suportada')}`);
+  }
+
+  // 6. Microfones disponíveis
+  if (navigator.mediaDevices?.enumerateDevices) {
+    try {
+      const devs = await navigator.mediaDevices.enumerateDevices();
+      const mics = devs.filter(d => d.kind === 'audioinput');
+      rows.push(`🎤 <b>Microfones:</b> ${mics.length > 0 ? ok(mics.length + ' encontrado(s)') : err('Nenhum detectado')}`);
+    } catch(_) {
+      rows.push(`🎤 <b>Microfones:</b> ${warn('Não verificável')}`);
+    }
+  }
+
+  // 7. Online
+  rows.push(`📶 <b>Conexão:</b> ${navigator.onLine ? ok('Online') : err('Offline — Web Speech API requer internet')}`);
+
+  // 8. Recomendação final
+  if (!hasSR) {
+    rows.push(`<br>💡 <b>Recomendação:</b> ${err('Instale o Google Chrome e abra o aplicativo nele.')}`);
+  } else if (!isSecure) {
+    rows.push(`<br>💡 <b>Recomendação:</b> ${err('Acesse via HTTPS ou abra o arquivo localmente.')}`);
+  } else {
+    rows.push(`<br>💡 <b>Tudo pronto</b> para transcrição. Clique em Iniciar Transcrição.`);
+  }
+
+  el.innerHTML = rows.join('<br>');
+}
+
+/* ──────────────────────────────────────────────────────────────
    INICIALIZAÇÃO
    ────────────────────────────────────────────────────────────── */
 (function init() {
@@ -2533,6 +2712,9 @@ function syncFab({ rec, pau }) {
   // Verificar estado da permissão após breve delay para UI renderizar
   // checkMicPermission() apenas LÊ o estado — não solicita acesso
   setTimeout(checkMicPermission, 800);
+
+  // Pré-carregar diagnóstico em background
+  setTimeout(runDiagnostic, 1200);
 
   // Aviso ao sair com transcrição não salva
   window.addEventListener('beforeunload', e => {
