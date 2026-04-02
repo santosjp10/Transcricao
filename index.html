@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="theme-color" content="#08090d"/>
-<title>TranscriçãoViva v2.0 — Aulas Acessíveis</title>
+<title>TranscriçãoViva v3.0 — Aulas Acessíveis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
 <style>
@@ -29,15 +29,14 @@
   --success:      #10b981;
   --warning:      #f59e0b;
   --danger:       #ef4444;
-  --speaker-a:    #34d399;   /* professor */
-  --speaker-b:    #60a5fa;   /* aluno */
+
   --text-primary: #eef2ff;
   --text-second:  #8892a4;
   --text-muted:   #4a5568;
   --border:       #1e2535;
   --border-acc:   rgba(0,229,255,0.28);
-  --font-ui:      'Syne', sans-serif;
-  --font-mono:    'Space Mono', monospace;
+  --font-ui:      'Syne', system-ui, -apple-system, sans-serif;
+  --font-mono:    'Space Mono', ui-monospace, 'Cascadia Code', monospace;
   --r:  12px;
   --rl: 20px;
   --fs-base: 20px;           /* mínimo exigido por acessibilidade */
@@ -103,13 +102,7 @@ body::before {
 }
 body.theme-light::before { display: none; }
 
-/* ── Layout ── */
-.wrap {
-  position: relative; z-index: 1;
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 1.5rem 1.4rem 5rem;
-}
+/* .wrap — definido no bloco de layout principal abaixo */
 
 /* ── Header ── */
 header {
@@ -177,8 +170,8 @@ header {
   padding: 0.65rem 1rem; border-radius: var(--r);
   background: var(--bg-secondary); border: 1px solid var(--border);
   font-family: var(--font-mono); font-size: var(--fs-sm);
-  color: var(--text-second); margin-bottom: 1.25rem;
-  transition: all 0.3s; min-height: 48px;
+  color: var(--text-second); margin-bottom: 0;
+  transition: all 0.3s; min-height: 48px; flex-shrink: 0;
 }
 .statusbar.rec  { border-color: rgba(16,185,129,.4); color: var(--success); background: rgba(16,185,129,.06); }
 .statusbar.pau  { border-color: rgba(245,158,11,.4);  color: var(--warning); background: rgba(245,158,11,.06); }
@@ -231,8 +224,7 @@ header {
 .btn-ai { background: linear-gradient(135deg, #4f1dcb, var(--purple)); color: #fff; box-shadow: 0 0 18px var(--purple-glow); }
 .btn-ai:hover { box-shadow: 0 0 28px rgba(139,92,246,.38); transform: translateY(-1px); }
 
-.btn-export-sum { background: var(--bg-secondary); color: var(--success); border-color: rgba(16,185,129,.3); }
-.btn-export-sum:hover { background: rgba(16,185,129,.1); border-color: var(--success); transform: translateY(-1px); }
+
 
 .btn-sm { padding: 0.5rem 0.9rem; font-size: 0.88rem; }
 
@@ -349,16 +341,7 @@ header {
 
 .t-interim { color: var(--text-muted); font-style: italic; }
 
-/* Marcação de falante */
-.spk-tag {
-  display: inline-block;
-  font-family: var(--font-mono); font-size: 0.7rem;
-  padding: 0.08rem 0.45rem; border-radius: 4px;
-  font-weight: 700; letter-spacing: 0.05em;
-  margin-right: 0.35rem; vertical-align: middle;
-}
-.spk-P { background: rgba(52,211,153,.15); color: var(--speaker-a); }
-.spk-A { background: rgba(96,165,250,.15); color: var(--speaker-b); }
+
 
 /* Parágrafo por pausa */
 .t-para {
@@ -397,66 +380,50 @@ header {
 }
 .recovery-banner.visible { display: flex; }
 
-/* ── Spinner ── */
-.spinner {
-  width: 20px; height: 20px; border-radius: 50%;
-  border: 2px solid var(--border); border-top-color: var(--purple);
-  animation: spin .75s linear infinite; flex-shrink: 0;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Resumo ── */
-.summary-box {
-  background: linear-gradient(135deg, rgba(139,92,246,.07), rgba(0,229,255,.04));
-  border: 1px solid rgba(139,92,246,.22); border-radius: var(--r);
-  padding: 1.4rem; font-size: 1.05rem; line-height: 1.85;
-  color: var(--text-primary); display: none;
-}
-.summary-box.visible { display: block; animation: fadeIn .4s ease; }
 
-.summary-box h3 { font-size: 1.05rem; color: var(--accent); margin: 1rem 0 0.4rem; }
-.summary-box h3:first-child { margin-top: 0; }
-.summary-box ul { padding-left: 1.35rem; }
-.summary-box li { margin-bottom: 0.35rem; }
-.summary-box p { margin-bottom: 0.7rem; }
-.summary-box strong { color: var(--text-primary); }
 
-.ai-loader {
-  display: none; align-items: center; justify-content: center;
-  gap: 0.75rem; padding: 1.8rem;
-  color: var(--text-second); font-family: var(--font-mono); font-size: var(--fs-sm);
-}
-.ai-loader.visible { display: flex; }
-
-/* ── Input API ── */
-.api-row { display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; }
-.api-input {
-  flex: 1; min-width: 220px;
-  padding: 0.7rem 1rem; background: var(--bg-secondary);
-  border: 1px solid var(--border); border-radius: var(--r);
-  color: var(--text-primary); font-family: var(--font-mono); font-size: var(--fs-sm);
-  transition: border-color 0.2s;
-}
-.api-input:focus { outline: none; border-color: var(--border-acc); }
-.api-input::placeholder { color: var(--text-muted); }
-.api-hint { font-size: var(--fs-xs); color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.45rem; }
 
 /* ── Export group ── */
 .export-grp { display: flex; gap: 0.65rem; flex-wrap: wrap; }
 
-/* ── Speaker key ── */
-.spk-key {
-  display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
-  margin-top: 0.7rem; padding: 0.6rem 0.9rem;
-  background: var(--bg-secondary); border-radius: var(--r); border: 1px solid var(--border);
-  font-size: var(--fs-sm);
-}
-.spk-key-item { display: flex; align-items: center; gap: 0.4rem; }
 
-/* ── Responsivo ── */
-/* ══════════════════════════════════════════════════════
-   RESPONSIVO MOBILE — breakpoints completos
-   ══════════════════════════════════════════════════════ */
+
+/* ── Histórico de sessões ── */
+.session-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.session-item {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 1rem; border-radius: var(--r);
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+.session-item:hover { border-color: rgba(0,229,255,0.2); }
+.session-meta { flex: 1; min-width: 0; }
+.session-date { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--accent); }
+.session-info { font-size: var(--fs-sm); color: var(--text-second); margin-top: 0.2rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.session-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+.session-empty { text-align: center; padding: 2rem 1rem;
+  font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-muted); }
+
+/* ── Seletor de microfone ── */
+.mic-select-row { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-bottom: 0.85rem; }
+.mic-select-row .select-field { flex: 1; min-width: 200px; }
+
+/* ── Indicador de qualidade de reconhecimento ── */
+.quality-badge {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.15rem 0.55rem; border-radius: 100px;
+  font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.04em; transition: all 0.4s;
+}
+.quality-badge.high   { background: rgba(16,185,129,.14); color: var(--success); border: 1px solid rgba(16,185,129,.3); }
+.quality-badge.medium { background: rgba(245,158,11,.14);  color: var(--warning); border: 1px solid rgba(245,158,11,.3); }
+.quality-badge.low    { background: rgba(239,68,68,.12);   color: var(--danger);  border: 1px solid rgba(239,68,68,.3); }
+.quality-badge.idle   { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+
+
+
 
 /* Tablet (≤ 768px) */
 @media (max-width: 768px) {
@@ -464,16 +431,13 @@ header {
   .card { padding: 1.25rem; }
   .ctrl-grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
   .api-row { flex-direction: column; }
-  .api-input { min-width: unset; width: 100%; }
   .acc-row { flex-wrap: wrap; gap: 0.5rem; }
   .seg-group { flex-wrap: nowrap; overflow-x: auto; }
   .font-slider { width: 120px; }
   .field-row { flex-direction: column; }
   .select-field { width: 100%; }
-  .spk-key { gap: 0.5rem; }
   .export-grp { gap: 0.5rem; }
   .export-grp .btn { flex: 1 1 calc(50% - 0.25rem); }
-  .summary-box { font-size: 1rem; }
   #audioCanvas { height: 52px; }
 }
 
@@ -514,7 +478,6 @@ header {
 
   /* API config */
   .api-row { gap: 0.5rem; }
-  #apiProvider { width: 100%; min-width: unset; }
 
   /* Seg buttons menores */
   .seg-btn { padding: 0.5rem 0.65rem; font-size: 0.7rem; }
@@ -522,9 +485,7 @@ header {
   /* Slider de fonte */
   .font-slider { width: 100px; }
 
-  /* Marcação de falante compacta */
-  .spk-key { flex-direction: column; align-items: flex-start; gap: 0.4rem; padding: 0.5rem 0.7rem; }
-  .spk-key-item { flex-direction: row; gap: 0.5rem; }
+
 
   /* Waveform menor */
   #audioCanvas { height: 44px; }
@@ -534,8 +495,6 @@ header {
   .recovery-banner { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
 
   /* Resumo */
-  .summary-box h3 { font-size: 0.95rem; }
-  .summary-box li, .summary-box p { font-size: 0.95rem; }
 
   /* Textarea dicionário */
   .textarea-field { min-height: 60px; font-size: 0.82rem; }
@@ -552,29 +511,7 @@ header {
   .logo-title { font-size: 1.25rem; }
 }
 
-/* ── Barra de ação flutuante (FAB) — mobile ── */
-.fab-bar {
-  display: none;
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  z-index: 999;
-  background: rgba(10, 12, 18, 0.96);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid var(--border);
-  padding: 0.65rem 1rem;
-  padding-bottom: calc(0.65rem + env(safe-area-inset-bottom));
-  display: none;
-  gap: 0.5rem;
-  justify-content: stretch;
-}
-.fab-bar .btn { flex: 1; min-height: 48px; font-size: 0.9rem; }
-
-@media (max-width: 640px) {
-  .fab-bar { display: flex !important; }
-  /* Esconder controles duplicados no card quando FAB estiver visível */
-  #mainCtrlCard { display: none; }
-}
+/* FAB removida — substituída pela rec-bar fixa */
 
 /* ── Modal de permissão de microfone ── */
 .mic-modal-overlay {
@@ -820,10 +757,6 @@ header {
 /* Esconder card de controles duplicados — controles ficam só na rec-bar */
 #mainCtrlCard { display: none !important; }
 
-/* Controles extras (marcação de falante) em card separado na aba transcrição */
-.spk-card {
-  margin-bottom: 0; /* último card da aba não precisa de margem extra */
-}
 
 /* ── Ajustar wrap para tema claro ── */
 body.theme-light .rec-bar,
@@ -865,7 +798,7 @@ body.theme-hc .tab-nav {
 <header>
   <div>
     <div class="logo-title">
-      TranscriçãoViva<span class="badge-v2">v2.0</span>
+      TranscriçãoViva<span class="badge-v2">v3.0</span>
     </div>
     <div class="logo-sub">Transcrição Acessível · Deficiência Auditiva · pt-BR</div>
   </div>
@@ -876,6 +809,12 @@ body.theme-hc .tab-nav {
   </div>
 </header>
 
+<!-- ══════════════ STATUS BAR (fora da scroll zone — sempre visível) ══════════════ -->
+<div class="statusbar" id="statusbar">
+  <span>ℹ️</span>
+  <span id="statusTxt">Pronto. Selecione a disciplina e clique em <strong>🎙️ Iniciar</strong>.</span>
+</div>
+
 <!-- ══════════════ ZONA DE CONTEÚDO SCROLLÁVEL ══════════════ -->
 <div class="content-zone" id="contentZone">
 
@@ -884,12 +823,6 @@ body.theme-hc .tab-nav {
   ⚠️ Sessão anterior recuperada.
   <button class="btn btn-neu btn-sm" onclick="dismissRecovery()">Restaurar</button>
   <button class="btn btn-stop btn-sm" onclick="clearAndDismissRecovery()">Descartar</button>
-</div>
-
-<!-- ══════════════ STATUS BAR ══════════════ -->
-<div class="statusbar" id="statusbar">
-  <span>ℹ️</span>
-  <span id="statusTxt">Pronto. Selecione a disciplina e clique em <strong>Iniciar</strong>.</span>
 </div>
 
 <!-- ══════════════════════════════════════════════════════
@@ -910,26 +843,19 @@ body.theme-hc .tab-nav {
     </div>
     <div class="t-footer">
       <span id="wordCount">0 palavras · 0 frases</span>
+      <!-- Mini indicador de volume inline na aba transcrição -->
+      <div id="miniVolWrap" style="display:none;align-items:center;gap:5px;flex-shrink:0;">
+        <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-muted);">🎙</span>
+        <div style="width:60px;height:6px;border-radius:3px;background:var(--bg-primary);border:1px solid var(--border);overflow:hidden;">
+          <div id="miniVolFill" style="height:100%;width:0%;border-radius:3px;background:var(--success);transition:width 0.1s;"></div>
+        </div>
+      </div>
+      <span class="quality-badge idle" id="qualityBadge">— confiança</span>
       <span id="editHint" style="display:none;color:var(--accent);">✏️ Edição ativa</span>
       <span style="color:var(--success);font-size:var(--fs-xs);" id="autoSaveLbl"></span>
     </div>
   </div>
 
-  <!-- Marcação de falante (abaixo da transcrição) -->
-  <div class="card spk-card" style="margin-bottom:0;">
-    <div class="spk-key" style="border:none;padding:0;margin:0;background:transparent;">
-      <strong style="font-size:var(--fs-sm);color:var(--text-second);">Marcar fala:</strong>
-      <div class="spk-key-item">
-        <span class="spk-tag spk-P">P</span>
-        <button class="btn btn-neu btn-sm" onclick="markSpeaker('P')" title="Tecla: P">Professor</button>
-      </div>
-      <div class="spk-key-item">
-        <span class="spk-tag spk-A">A</span>
-        <button class="btn btn-neu btn-sm" onclick="markSpeaker('A')" title="Tecla: A">Aluno</button>
-      </div>
-      <span style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--text-muted);">ou teclas P / A</span>
-    </div>
-  </div>
 
 </div><!-- /panel-transcricao -->
 
@@ -986,15 +912,17 @@ body.theme-hc .tab-nav {
         <option value="custom">Outra (personalizado)</option>
       </select>
       <span style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--text-muted);align-self:center;">
-        Melhora o resumo e a correção de termos
+        Ativa correção automática de termos técnicos
       </span>
     </div>
+
+
     <div>
       <div class="card-title" style="margin-bottom:0.5rem;">Dicionário de Correções Automáticas</div>
       <p style="font-size:var(--fs-sm);color:var(--text-second);margin-bottom:0.6rem;font-family:var(--font-mono);">
         Um par por linha: <code style="color:var(--accent)">termo errado → termo correto</code>
       </p>
-      <textarea class="textarea-field" id="dictArea" placeholder="senso real → sensorial&#10;georreferência → georreferenciamento&#10;habeas corpus → habeas corpus"></textarea>
+      <textarea class="textarea-field" id="dictArea" oninput="saveDisciplinePrefs()" placeholder="senso real → sensoriamento remoto&#10;georreferência → georreferenciamento&#10;habeas corpus → habeas corpus"></textarea>
       <div style="margin-top:0.5rem;display:flex;gap:0.6rem;flex-wrap:wrap;">
         <button class="btn btn-neu btn-sm" onclick="loadPresetDict()">📚 Carregar Preset</button>
         <button class="btn btn-neu btn-sm" onclick="clearDict()">🗑️ Limpar</button>
@@ -1002,19 +930,21 @@ body.theme-hc .tab-nav {
     </div>
   </div>
 
+  <!-- Seletor de microfone -->
   <div class="card">
-    <div class="card-title">Inteligência Artificial — Chave de API</div>
-    <div class="api-row">
-      <select class="select-field" id="apiProvider" style="min-width:200px;">
-        <option value="anthropic">Anthropic (Claude)</option>
-        <option value="openai">OpenAI (GPT)</option>
-        <option value="gemini">Google Gemini</option>
+    <div class="card-title">Dispositivo de Áudio</div>
+    <div class="mic-select-row">
+      <select class="select-field" id="micDeviceSelect" onchange="saveMicDevice()">
+        <option value="">— Microfone padrão do sistema —</option>
       </select>
-      <input type="password" class="api-input" id="apiKeyInput" placeholder="Cole sua chave (sk-… | AIza…)" autocomplete="off"/>
-      <button class="btn btn-neu btn-sm" onclick="toggleKey()">👁️ Ver</button>
+      <button class="btn btn-neu btn-sm" onclick="listMicrophones()" title="Atualizar lista de microfones">🔄 Atualizar</button>
     </div>
-    <p class="api-hint">⚠️ A chave permanece apenas nesta aba — nunca enviada a terceiros.</p>
+    <p style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--text-muted);">
+      ⚠️ O seletor de microfone requer permissão concedida previamente. Se a lista estiver vazia, inicie a transcrição uma vez para liberar o acesso.
+    </p>
   </div>
+
+
 
   <!-- Diagnóstico do dispositivo -->
   <div class="card" id="diagCard">
@@ -1062,22 +992,33 @@ body.theme-hc .tab-nav {
 
 </div><!-- /panel-exportar -->
 
+
 <!-- ══════════════════════════════════════════════════════
-     ABA 5 — RESUMO IA
+     ABA 5 — HISTÓRICO DE SESSÕES
      ══════════════════════════════════════════════════════ -->
-<div class="tab-panel" id="panel-resumo" role="tabpanel" aria-labelledby="tab-resumo">
+<div class="tab-panel" id="panel-historico" role="tabpanel" aria-labelledby="tab-historico">
 
   <div class="card">
-    <div class="card-title">Resumo Gerado por Inteligência Artificial</div>
-    <div style="display:flex;gap:0.7rem;flex-wrap:wrap;margin-bottom:1rem;">
-      <button class="btn btn-ai" id="btnSummary" onclick="generateSummary()">✨ Gerar Resumo com IA</button>
-      <button class="btn btn-export-sum" id="btnExportSum" onclick="exportSummaryTxt()" disabled>📋 Exportar (.txt)</button>
+    <div class="card-title" style="justify-content:space-between;margin-bottom:0.9rem;">
+      <span>Sessões Salvas (últimas 5)</span>
+      <button class="btn btn-stop btn-sm" onclick="clearAllHistory()" title="Apagar todo o histórico">🗑️ Limpar tudo</button>
     </div>
-    <div class="ai-loader" id="aiLoader"><div class="spinner"></div><span>Gerando resumo… aguarde.</span></div>
-    <div class="summary-box" id="summaryBox"></div>
+    <div class="session-list" id="sessionList">
+      <div class="session-empty" id="sessionEmpty">Nenhuma sessão salva ainda.<br>Grave uma aula para que ela apareça aqui.</div>
+    </div>
   </div>
 
-</div><!-- /panel-resumo -->
+  <div class="card" style="margin-bottom:0;">
+    <div class="card-title">ℹ️ Sobre o Histórico</div>
+    <p style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--text-muted);line-height:1.8;">
+      O histórico é salvo localmente neste dispositivo/navegador.<br>
+      Ao restaurar uma sessão, ela substitui a transcrição atual.<br>
+      Exporte antes de restaurar se quiser manter a transcrição em andamento.
+    </p>
+  </div>
+
+</div><!-- /panel-historico -->
+
 
 </div><!-- /content-zone -->
 
@@ -1087,7 +1028,15 @@ body.theme-hc .tab-nav {
   <button class="btn btn-pause" id="btnPause" onclick="pauseTranscription()" disabled>⏸️ Pausar</button>
   <button class="btn btn-stop"  id="btnStop"  onclick="stopTranscription()"  disabled>⏹️ Parar</button>
   <button class="btn btn-neu"   onclick="clearTranscript()" title="Limpar transcrição">🗑️</button>
-  <span class="live-badge idle" id="liveBadge">● Stand-by</span>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:4px;">
+      <span class="live-badge idle" id="liveBadge">● Stand-by</span>
+      <span id="dictActiveBadge" title="Dicionário de correções ativo"
+        style="display:none;font-family:var(--font-mono);font-size:0.58rem;
+        background:rgba(0,229,255,.12);color:var(--accent);border:1px solid rgba(0,229,255,.3);
+        padding:1px 5px;border-radius:4px;">📖 dic</span>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════ NAVEGAÇÃO POR ABAS (rodapé fixo) ══════════════ -->
@@ -1110,6 +1059,13 @@ body.theme-hc .tab-nav {
     <span class="tab-icon">⚙️</span>
     Config
   </button>
+  <button class="tab-btn" id="tab-historico"
+          role="tab" aria-selected="false" aria-controls="panel-historico"
+          onclick="switchTab('historico')">
+    <span class="tab-icon">🗂️</span>
+    Histórico
+    <span class="tab-badge" id="badge-historico"></span>
+  </button>
   <button class="tab-btn" id="tab-exportar"
           role="tab" aria-selected="false" aria-controls="panel-exportar"
           onclick="switchTab('exportar')">
@@ -1117,13 +1073,7 @@ body.theme-hc .tab-nav {
     Exportar
     <span class="tab-badge" id="badge-exportar">!</span>
   </button>
-  <button class="tab-btn" id="tab-resumo"
-          role="tab" aria-selected="false" aria-controls="panel-resumo"
-          onclick="switchTab('resumo')">
-    <span class="tab-icon">✨</span>
-    Resumo IA
-    <span class="tab-badge" id="badge-resumo">✓</span>
-  </button>
+
 </nav>
 
 </div><!-- /wrap -->
@@ -1157,95 +1107,203 @@ body.theme-hc .tab-nav {
    DICIONÁRIOS PRESET POR DISCIPLINA
    ────────────────────────────────────────────────────────────── */
 const PRESETS = {
-  sensoriamento: `senso real → sensorial
-senso rio → sensório
-senso rimento → sensoriamento
+  sensoriamento: `senso real → sensoriamento remoto
+senso rio → sensoriamento remoto
+senso rimento → sensoriamento remoto
 sensoriamento real → sensoriamento remoto
+sensoriamento remoto → Sensoriamento Remoto
 s.i.g → SIG
+sig → SIG
 sistema de informação geográfica → Sistema de Informação Geográfica
+sistema de informações geográficas → Sistema de Informação Geográfica
 georreferência → georreferenciamento
-georreferenciamento → georreferenciamento
+georeferenciamento → georreferenciamento
+georeferencia → georreferenciamento
 índice de vegetação → NDVI
-NDVI → NDVI
-raster → raster
-vetor → vetor
-pixel → pixel
-resolução espacial → resolução espacial
-resolução temporal → resolução temporal
+n.d.v.i → NDVI
+ndvi → NDVI
+nd vi → NDVI
 landsat → Landsat
+lan sat → Landsat
 sentinel → Sentinel
 modis → MODIS
-drone → drone
+mod is → MODIS
+van → VANT
 vant → VANT
 lidar → LiDAR
+li dar → LiDAR
 gps → GPS
-datum → datum
-projeção cartográfica → projeção cartográfica
-coordenadas geográficas → coordenadas geográficas
-shapefile → shapefile
+g.p.s → GPS
 qgis → QGIS
+q gis → QGIS
 arcgis → ArcGIS
-google earth → Google Earth Engine
-análise multitemporal → análise multitemporal
+arc gis → ArcGIS
+google earth engine → Google Earth Engine
+gee → GEE
+shapefaile → shapefile
+shape file → shapefile
+ortomosaico → ortomosaico
+orto mosaico → ortomosaico
+multiespectral → multiespectral
+multi espectral → multiespectral
+espectroradiômetro → espectrorradiômetro
+reflectância → reflectância
+reflectancia → reflectância
+reflência → reflectância
+absortância → absortância
+transmitância → transmitância
+emissividade → emissividade
+albedo → albedo
+fotointerpretação → fotointerpretação
+foto interpretação → fotointerpretação
+estereoscopia → estereoscopia
+paralaxe → paralaxe
+ortorretificação → ortorretificação
+orto retificação → ortorretificação
+geóide → geoide
+projeção UTM → projeção UTM
+utm → UTM
+datum sad → datum SAD69
+sad 69 → SAD69
+sirgas → SIRGAS
+sirgas 2000 → SIRGAS2000
+wgs 84 → WGS84
+w.g.s → WGS84
+máxima verossimilhança → máxima verossimilhança
 classificação supervisionada → classificação supervisionada
-agricultura de precisão → agricultura de precisão`,
+classificação não supervisionada → classificação não supervisionada
+k means → K-means
+random forest → Random Forest
+aprendizado de máquina → aprendizado de máquina
+machine learning → machine learning
+agricultura de precisão → agricultura de precisão
+índice de área foliar → índice de área foliar
+iaf → IAF
+cobertura do solo → cobertura do solo
+uso do solo → uso e cobertura do solo`,
 
-  agronomia: `adubação → adubação
-fertilização → fertilização
-irrigação → irrigação
-solo → solo
-cultivo → cultivo
-plantio → plantio
-colheita → colheita
-defensivo → defensivo
-pesticida → pesticida
+  agronomia: `fito sanitário → fitossanitário
+fitossanitario → fitossanitário
+rios fera → rizosfera
+rizos fera → rizosfera
+fenó logo → fenologia
+feno logia → fenologia
+macro nutriente → macronutriente
+micro nutriente → micronutriente
+micro organismos → microrganismos
+micro organismo → microrganismo
+fixação biológica → fixação biológica de nitrogênio
+fbn → FBN
+matéria orgânica → matéria orgânica
+c.e.c → CTC
+c.t.c → CTC
+capacidade de troca catiônica → capacidade de troca de cátions
+p.h → pH
+acidez do solo → acidez do solo
+calagem → calagem
+adubação verde → adubação verde
+planta daninha → planta daninha
+controle biológico → controle biológico
+manejo integrado → manejo integrado de pragas
+m.i.p → MIP
+defensivo → defensivo agrícola
 herbicida → herbicida
 fungicida → fungicida
 inseticida → inseticida
-manejo integrado → manejo integrado de pragas
-fito → fito
+nematicida → nematicida
+irrigação por gotejamento → irrigação por gotejamento
+pivô central → pivô central
+evapotranspiração → evapotranspiração
+et → evapotranspiração
+tensão hídrica → tensão hídrica
+solo argiloso → solo argiloso
+solo arenoso → solo arenoso
+solo franco → solo franco
+perfil do solo → perfil do solo
+horizonte → horizonte do solo
+compactação → compactação do solo
+erosão hídrica → erosão hídrica
+erosão eólica → erosão eólica
+plantio direto → plantio direto
+rotação de culturas → rotação de culturas
+consorciação → consorciação de culturas
 fisiologia vegetal → fisiologia vegetal
-genética → genética
-melhoramento → melhoramento genético`,
+fotossíntese → fotossíntese
+fotossintese → fotossíntese
+respiração celular → respiração celular
+transpiração → transpiração vegetal
+genotipo → genótipo
+fenótipo → fenótipo
+melhoramento genético → melhoramento genético
+melhoramento → melhoramento genético
+biologia molecular → biologia molecular
+transgênico → transgênico
+ogm → OGM
+o.g.m → OGM`,
 
   direito: `habeas corpus → habeas corpus
 mandado de segurança → mandado de segurança
+mandado de injunção → mandado de injunção
+ação popular → ação popular
+ação civil pública → ação civil pública
+a.c.p → ACP
 recurso → recurso
 apelação → apelação
 agravo → agravo
-embargo → embargos
+agravo regimental → agravo regimental
+agravo interno → agravo interno
+embargo → embargos de declaração
+embargos → embargos de declaração
 litispendência → litispendência
 coisa julgada → coisa julgada
 contraditório → contraditório
 ampla defesa → ampla defesa
 due process → devido processo legal
 tutela → tutela
+tutela antecipada → tutela antecipada
+tutela cautelar → tutela cautelar
 liminar → liminar
-cautelar → medida cautelar
+medida cautelar → medida cautelar
 jurisprudência → jurisprudência
 doutrina → doutrina
 código civil → Código Civil
+c.c → Código Civil
 código penal → Código Penal
+c.p → Código Penal
+código de processo civil → Código de Processo Civil
+c.p.c → CPC
+código de processo penal → Código de Processo Penal
+c.p.p → CPP
 constituição federal → Constituição Federal
+c.f → Constituição Federal
 stf → STF
+s.t.f → STF
 stj → STJ
+s.t.j → STJ
 trt → TRT
-art → art.
-artigo → art.
+t.r.t → TRT
+tst → TST
+t.s.t → TST
+tjmg → TJMG
+tjsp → TJSP
+princípio da legalidade → princípio da legalidade
+princípio da moralidade → princípio da moralidade
+princípio da publicidade → princípio da publicidade
+princípio da impessoalidade → princípio da impessoalidade
+princípio da eficiência → princípio da eficiência
+seguridade social → seguridade social
+previdência social → previdência social
+direito adquirido → direito adquirido
+ato jurídico perfeito → ato jurídico perfeito
 parágrafo único → parágrafo único
-inciso → inciso`,
+caput → caput
+inciso → inciso
+alínea → alínea`,
 
   custom: ''
 };
 
 /* Contextos de disciplina para o prompt de resumo */
-const DISC_CONTEXT = {
-  sensoriamento: 'A aula é de Sensoriamento Remoto e SIG (Sistemas de Informação Geográfica), área de agronomia/geociências. Priorize: siglas técnicas (NDVI, SIG, VANT, LiDAR, GPS), nomes de softwares (QGIS, ArcGIS), sensores e satélites (Landsat, Sentinel, MODIS), metodologias de análise espacial e conceitos de georreferenciamento.',
-  agronomia: 'A aula é de Agronomia. Priorize: manejo de solo e culturas, insumos agrícolas, fisiologia vegetal, melhoramento genético, técnicas de irrigação e colheita.',
-  direito: 'A aula é de Direito. Priorize: artigos de lei (com numeração), princípios constitucionais, institutos jurídicos, nomes de tribunais e recursos processuais. Identifique se a aula é de Direito Civil, Penal, Processual, Constitucional ou outro ramo.',
-  custom: 'A aula é de uma disciplina acadêmica geral.',
-  '': 'A aula é de uma disciplina acadêmica.'
-};
 
 /* ──────────────────────────────────────────────────────────────
    ESTADO DA APLICAÇÃO
@@ -1255,14 +1313,11 @@ const S = {
   isRecording:       false,
   isPaused:          false,
   finalTranscript:   '',
-  sentences:         [],           // { text, speaker, ts }
-  currentSpeaker:    'P',          // 'P' professor | 'A' aluno
+  sentences:         [],           // { text, ts }
   timerInterval:     null,
   seconds:           0,
   silenceTimer:      null,
   SILENCE_MS:        4000,
-  summaryGenerated:  false,
-  summaryText:       '',
   audioCtx:          null,
   analyser:          null,
   animFrame:         null,
@@ -1296,12 +1351,6 @@ const el = {
   btnStart:  $('btnStart'),
   btnPause:  $('btnPause'),
   btnStop:   $('btnStop'),
-  btnSum:    $('btnSummary'),
-  btnExpSum: $('btnExportSum'),
-  apiKey:    $('apiKeyInput'),
-  apiProv:   $('apiProvider'),
-  loader:    $('aiLoader'),
-  sumBox:    $('summaryBox'),
   dictArea:  $('dictArea'),
   disc:      $('disciplineSelect'),
   canvas:    $('audioCanvas'),
@@ -1346,6 +1395,26 @@ function setTheme(t, btn) {
   localStorage.setItem('tv2_theme', t);
 }
 
+/* Persistir disciplina e dicionário ao mudar */
+function saveDisciplinePrefs() {
+  _dictCache = null;
+  updateDictBadge();
+  try {
+    localStorage.setItem('tv2_discipline', el.disc.value);
+    localStorage.setItem('tv2_dict', el.dictArea.value);
+  } catch(_) {}
+}
+
+function loadDisciplinePrefs() {
+  try {
+    const disc = localStorage.getItem('tv2_discipline');
+    const dict = localStorage.getItem('tv2_dict');
+    if (disc) el.disc.value = disc;
+    if (dict) { el.dictArea.value = dict; _dictCache = null; }
+  } catch(_) {}
+  updateDictBadge();
+}
+
 function setFontSize(v) {
   document.documentElement.style.setProperty('--fs-base', v + 'px');
   $('fontVal').textContent = v + 'px';
@@ -1355,26 +1424,32 @@ function setFontSize(v) {
 /* ──────────────────────────────────────────────────────────────
    DICIONÁRIO DE CORREÇÃO AUTOMÁTICA
    ────────────────────────────────────────────────────────────── */
+// Cache do dicionário — re-parsear só quando o textarea mudar
+let _dictCache = null;
+let _dictRaw   = '';
+
 function parseDictionary() {
-  const lines = el.dictArea.value.split('\n');
-  const dict = [];
-  for (const line of lines) {
+  const raw = el.dictArea.value;
+  if (raw === _dictRaw && _dictCache) return _dictCache;
+  _dictRaw = raw;
+  _dictCache = [];
+  for (const line of raw.split('\n')) {
     const parts = line.split('→');
     if (parts.length === 2) {
       const from = parts[0].trim().toLowerCase();
       const to   = parts[1].trim();
-      if (from && to) dict.push({ from, to });
+      if (from && to) _dictCache.push({ from, to, re: new RegExp(`\\b${escapeRegex(from)}\\b`, 'gi') });
     }
   }
-  return dict;
+  return _dictCache;
 }
 
 function applyDictionary(text) {
   const dict = parseDictionary();
+  if (!dict.length) return text;
   let result = text;
-  for (const { from, to } of dict) {
-    // Substituição case-insensitive, preservando limites de palavra
-    const re = new RegExp(`\\b${escapeRegex(from)}\\b`, 'gi');
+  for (const { re, to } of dict) {
+    re.lastIndex = 0; // reset para reutilização do RegExp com flag g
     result = result.replace(re, to);
   }
   return result;
@@ -1387,15 +1462,17 @@ function escapeRegex(s) {
 function onDisciplineChange() {
   const val = el.disc.value;
   if (val && PRESETS[val]) loadPresetDict();
+  saveDisciplinePrefs();
 }
 
 function loadPresetDict() {
   const val = el.disc.value;
   if (!val || !PRESETS[val]) { alert('Selecione uma disciplina primeiro.'); return; }
   el.dictArea.value = PRESETS[val];
+  saveDisciplinePrefs();
 }
 
-function clearDict() { el.dictArea.value = ''; }
+function clearDict() { el.dictArea.value = ''; saveDisciplinePrefs(); }
 
 /* ──────────────────────────────────────────────────────────────
    VISUALIZADOR DE ÁUDIO — Canvas Waveform
@@ -1448,6 +1525,12 @@ function drawWaveform() {
 
     el.volFill.style.width = pct + '%';
     el.volPct.textContent  = pct + '%';
+    // Mini volume na aba de transcrição
+    const mv = document.getElementById('miniVolFill');
+    if (mv) {
+      mv.style.width = pct + '%';
+      mv.style.background = pct > 60 ? 'var(--accent)' : pct > 20 ? 'var(--success)' : 'var(--text-muted)';
+    }
 
     // Cor da barra por nível
     el.volFill.style.background =
@@ -1475,32 +1558,26 @@ function drawWaveform() {
 }
 
 function stopAudio() {
+  // 1. Parar animação
   if (S.animFrame) { cancelAnimationFrame(S.animFrame); S.animFrame = null; }
-  if (S.audioCtx)  { S.audioCtx.close().catch(()=>{}); S.audioCtx = null; }
+  // 2. Parar tracks do microfone ANTES de fechar AudioContext — libera o ícone de mic
   if (S.mediaStream) { S.mediaStream.getTracks().forEach(t => t.stop()); S.mediaStream = null; }
+  // 3. Fechar AudioContext
+  if (S.audioCtx)  { S.audioCtx.close().catch(()=>{}); S.audioCtx = null; }
   S.analyser = null;
   el.volFill.style.width = '0%';
   el.volPct.textContent  = '0%';
+  const mv2 = document.getElementById('miniVolWrap');
+  if (mv2) mv2.style.display = 'none';
+  const mvf = document.getElementById('miniVolFill');
+  if (mvf) mvf.style.width = '0%';
   // Limpar canvas
-  const ctx = el.canvas.getContext('2d');
-  ctx.clearRect(0, 0, el.canvas.width, el.canvas.height);
+  try {
+    const ctx = el.canvas.getContext('2d');
+    ctx.clearRect(0, 0, el.canvas.width, el.canvas.height);
+  } catch(_) {}
 }
 
-/* ──────────────────────────────────────────────────────────────
-   MARCAÇÃO DE FALANTE
-   ────────────────────────────────────────────────────────────── */
-function markSpeaker(who) {
-  S.currentSpeaker = who;
-  setStatus(S.isRecording ? 'rec' : 'idle',
-    `🎙️ Próximas falas marcadas como: <strong>${who === 'P' ? 'Professor' : 'Aluno'}</strong>`);
-}
-
-// Teclas de atalho P / A durante gravação
-document.addEventListener('keydown', e => {
-  if (S.editingPhrase) return;
-  if (e.key === 'p' || e.key === 'P') markSpeaker('P');
-  if (e.key === 'a' || e.key === 'A') markSpeaker('A');
-});
 
 /* ──────────────────────────────────────────────────────────────
    INICIAR TRANSCRIÇÃO
@@ -1520,34 +1597,32 @@ async function startTranscription() {
     return;
   }
 
-  // Solicitar microfone + iniciar AudioContext
-  // (este ponto é alcançado via clique do usuário — gesto válido)
-  // Tentar com constraints ideais primeiro; fallback para {audio:true} no mobile
-  const constraints = S.isMobile
-    ? { audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 16000 } }
-    : { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } };
-
+  // getUserMedia chamado aqui — dentro do handler de clique (gesto válido para Android)
   try {
-    S.mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-  } catch(e1) {
-    // Fallback: constraints mínimas — último recurso
-    try {
-      S.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch(e) {
-      if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
-        showMicModal('denied');
-      } else if (e.name === 'NotFoundError' || e.name === 'NotReadableError'
-              || e.name === 'DevicesNotFoundError') {
-        showMicModal('unavailable');
-      } else if (e.name === 'SecurityError') {
-        showMicModal('insecure');
-      } else {
-        showMicModal('error', e.message || e.name);
-      }
-      return;
+    // Usar deviceId se selecionado pelo usuário
+    const micSel = document.getElementById('micDeviceSelect');
+    const deviceId = micSel && micSel.value ? micSel.value : undefined;
+    const audioConstraints = deviceId
+      ? { audio: { deviceId: { exact: deviceId } } }
+      : { audio: true };
+    S.mediaStream = await navigator.mediaDevices.getUserMedia(audioConstraints);
+    // Após obter acesso, atualizar lista de microfones com labels reais
+    listMicrophones().then(loadMicDevice);
+  } catch(e) {
+    if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+      showMicModal('denied');
+    } else if (e.name === 'NotFoundError' || e.name === 'NotReadableError'
+            || e.name === 'DevicesNotFoundError') {
+      showMicModal('unavailable');
+    } else if (e.name === 'SecurityError') {
+      showMicModal('insecure');
+    } else {
+      showMicModal('error', e.message || e.name);
     }
+    return;
   }
-  await initAudio(S.mediaStream);
+  // AudioContext é opcional — não bloqueia se falhar
+  initAudio(S.mediaStream).catch(() => {});
 
   const rec = new SR();
   S.recognition = rec;
@@ -1563,14 +1638,16 @@ async function startTranscription() {
     hidePauseAlert();
     let interim = '';
     let newFinal = '';
+    let lastConf = -1;
 
     for (let i = e.resultIndex; i < e.results.length; i++) {
       // Pegar melhor alternativa entre as 3
-      const best = pickBestAlternative(e.results[i]);
+      const { transcript: best, confidence } = pickBestAlternativeWithConf(e.results[i]);
       if (e.results[i].isFinal) {
         const cleaned = applyDictionary(cleanText(best));
         newFinal += cleaned + ' ';
-        S.sentences.push({ text: cleaned, speaker: S.currentSpeaker, ts: Date.now() });
+        S.sentences.push({ text: cleaned, ts: Date.now() });
+        if (confidence >= 0) lastConf = confidence;
         updateWordCount();
         autoSave();
       } else {
@@ -1578,9 +1655,11 @@ async function startTranscription() {
       }
     }
 
+    if (lastConf >= 0) updateQualityBadge(lastConf);
+
     if (newFinal) {
       S.finalTranscript += newFinal;
-      appendPhrase(newFinal.trim(), S.currentSpeaker);
+      appendPhrase(newFinal.trim());
     }
     el.tInterim.textContent = interim ? interim + '…' : '';
     scrollBottom();
@@ -1596,21 +1675,34 @@ async function startTranscription() {
     startTimer();
     hidePlaceholder();
     startSilenceTimer();
+    // Mostrar mini indicador de volume na aba transcrição
+    const mv = document.getElementById('miniVolWrap');
+    if (mv) mv.style.display = 'flex';
   };
 
   rec.onend = () => {
     if (!S.isRecording || S.isPaused) return;
-    // Backoff de 300ms — evita "InvalidStateError: already started" no Android
     clearTimeout(S.restartTimer);
     S.restartTimer = setTimeout(() => {
       if (!S.isRecording || S.isPaused) return;
       try {
         rec.start();
       } catch(e) {
-        // Se a instância expirou, criar nova
         if (e.name === 'InvalidStateError') {
-          S.recognition = null;
-          startTranscription();
+          // Instância expirou: criar nova SEM abrir novo getUserMedia
+          // (o mediaStream existente é reaproveitado)
+          const newRec = new SR();
+          S.recognition = newRec;
+          newRec.lang           = 'pt-BR';
+          newRec.continuous     = !S.isMobile;
+          newRec.interimResults = true;
+          newRec.maxAlternatives = S.isMobile ? 1 : 3;
+          // Reutilizar os handlers do closure atual
+          newRec.onresult = rec.onresult;
+          newRec.onstart  = rec.onstart;
+          newRec.onend    = rec.onend;
+          newRec.onerror  = rec.onerror;
+          try { newRec.start(); } catch(_) {}
         }
       }
     }, 300);
@@ -1668,11 +1760,9 @@ async function startTranscription() {
   }
 }
 
-/* Escolhe melhor alternativa considerando dicionário */
-function pickBestAlternative(result) {
-  // Se só há uma alternativa, retornar ela
-  if (result.length === 1) return result[0].transcript;
-  // Preferir a que tem maior confiança
+/* Escolhe melhor alternativa considerando dicionário — retorna transcript e confidence */
+function pickBestAlternativeWithConf(result) {
+  if (result.length === 1) return { transcript: result[0].transcript, confidence: result[0].confidence ?? -1 };
   let best = result[0].transcript;
   let bestConf = result[0].confidence || 0;
   for (let i = 1; i < result.length; i++) {
@@ -1681,7 +1771,12 @@ function pickBestAlternative(result) {
       best = result[i].transcript;
     }
   }
-  return best;
+  return { transcript: best, confidence: bestConf };
+}
+
+/* Manter compatibilidade com função anterior */
+function pickBestAlternative(result) {
+  return pickBestAlternativeWithConf(result).transcript;
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -1710,6 +1805,12 @@ function stopTranscription() {
     S.recognition = null;
   }
   stopAudio();
+  // Salvar no histórico se houver conteúdo
+  if (S.finalTranscript.trim()) {
+    saveToHistory({ transcript: S.finalTranscript, sentences: S.sentences, seconds: S.seconds });
+  }
+  // Resetar indicador de qualidade
+  updateQualityBadge(null);
   setStatus('ok', `✅ Transcrição encerrada. ${S.sentences.length} frases · ${fmtTime(S.seconds)}`);
   setMic(false);
   setLiveBadge('done');
@@ -1746,17 +1847,11 @@ function hidePauseAlert() { el.pauseAlert.classList.remove('visible'); }
 /* ──────────────────────────────────────────────────────────────
    DOM — TRANSCRIÇÃO
    ────────────────────────────────────────────────────────────── */
-function appendPhrase(text, speaker) {
+function appendPhrase(text) {
   if (!text) return;
 
   const wrap = document.createElement('span');
   wrap.className = 't-phrase phrase-new';
-
-  // Tag de falante
-  const tag = document.createElement('span');
-  tag.className = `spk-tag spk-${speaker}`;
-  tag.textContent = speaker;
-  wrap.appendChild(tag);
 
   // Texto
   const txt = document.createTextNode(text + ' ');
@@ -1769,6 +1864,11 @@ function appendPhrase(text, speaker) {
 }
 
 function enablePhraseEdit(wrap) {
+  // No mobile: usar modal com textarea (contenteditable em span é instável no Android)
+  if (S.isMobile) {
+    enablePhraseEditMobile(wrap);
+    return;
+  }
   wrap.contentEditable = 'true';
   wrap.focus();
   S.editingPhrase = true;
@@ -1778,19 +1878,82 @@ function enablePhraseEdit(wrap) {
     wrap.contentEditable = 'false';
     S.editingPhrase = false;
     el.editHint.style.display = 'none';
-    // Atualizar transcript a partir do DOM
     rebuildTranscriptFromDOM();
   };
   wrap.addEventListener('blur', finish, { once: true });
   wrap.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); wrap.blur(); } });
 }
 
+function enablePhraseEditMobile(wrap) {
+  // Extrair texto atual
+  const textNodes = Array.from(wrap.childNodes).filter(n => n.nodeType === 3);
+  const currentText = textNodes.map(n => n.textContent).join('').trim();
+
+  // Criar overlay de edição
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `position:fixed;inset:0;z-index:8888;background:rgba(0,0,0,.7);
+    display:flex;align-items:flex-end;justify-content:center;padding:1rem;
+    backdrop-filter:blur(4px);animation:fadeIn .2s ease;`;
+
+  const box = document.createElement('div');
+  box.style.cssText = `background:var(--bg-card);border:1px solid var(--border-acc);
+    border-radius:var(--rl);padding:1.25rem;width:100%;max-width:520px;`;
+
+  const label = document.createElement('p');
+  label.style.cssText = 'font-family:var(--font-mono);font-size:0.78rem;color:var(--text-muted);margin-bottom:0.6rem;';
+  label.textContent = '✏️ Editar frase — corrija o texto e confirme';
+
+  const ta = document.createElement('textarea');
+  ta.value = currentText;
+  ta.style.cssText = `width:100%;min-height:100px;background:var(--bg-secondary);
+    border:1px solid var(--border-acc);border-radius:var(--r);color:var(--text-primary);
+    font-size:1rem;line-height:1.6;padding:0.75rem;resize:vertical;
+    font-family:var(--font-ui);`;
+
+  const btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:0.6rem;margin-top:0.75rem;';
+
+  const btnOk = document.createElement('button');
+  btnOk.textContent = '✓ Confirmar';
+  btnOk.className = 'btn btn-start';
+  btnOk.style.flex = '1';
+
+  const btnCancel = document.createElement('button');
+  btnCancel.textContent = 'Cancelar';
+  btnCancel.className = 'btn btn-neu';
+  btnCancel.style.flex = '1';
+
+  const close = () => { document.body.removeChild(overlay); S.editingPhrase = false; };
+
+  btnOk.onclick = () => {
+    const newText = ta.value.trim();
+    if (newText) {
+      // Substituir nós de texto
+      textNodes.forEach(n => n.textContent = '');
+      const lastTextNode = textNodes[textNodes.length - 1] || document.createTextNode('');
+      lastTextNode.textContent = newText + ' ';
+      if (!wrap.contains(lastTextNode)) wrap.appendChild(lastTextNode);
+      rebuildTranscriptFromDOM();
+    }
+    close();
+  };
+  btnCancel.onclick = close;
+
+  btns.append(btnOk, btnCancel);
+  box.append(label, ta, btns);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+
+  S.editingPhrase = true;
+  // Focar textarea após render (necessário no Android)
+  setTimeout(() => ta.focus(), 100);
+}
+
 function rebuildTranscriptFromDOM() {
-  // Recontruir o texto final a partir das frases editadas
+  // Reconstruir o texto final a partir das frases editadas
   const phrases = el.tFinal.querySelectorAll('.t-phrase');
   let rebuilt = '';
   phrases.forEach(p => {
-    // Pegar apenas nós de texto, excluindo a tag de falante
     const texts = Array.from(p.childNodes)
       .filter(n => n.nodeType === 3)
       .map(n => n.textContent).join('').trim();
@@ -1829,7 +1992,9 @@ function autoSave() {
       savedAt:     new Date().toISOString(),
     };
     localStorage.setItem(LS_KEY, JSON.stringify(data));
-    el.saveLbl.textContent = '💾 Salvo ' + new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    el.saveLbl.textContent = '💾 ' + timeStr;
   } catch(e) { /* Storage cheio ou bloqueado */ }
 }
 
@@ -1856,7 +2021,7 @@ function dismissRecovery() {
   // Re-renderizar frases no DOM
   el.tFinal.innerHTML = '';
   for (const s of S.sentences) {
-    appendPhrase(s.text, s.speaker || 'P');
+    appendPhrase(s.text);
   }
   updateWordCount();
   el.timer.textContent = fmtTime(S.seconds);
@@ -1873,20 +2038,24 @@ function clearAndDismissRecovery() {
    LIMPAR TUDO
    ────────────────────────────────────────────────────────────── */
 function clearTranscript() {
+  // Confirmação obrigatória se há conteúdo — protege contra toque acidental
+  if (S.finalTranscript.trim() || S.isRecording) {
+    const palavras = S.finalTranscript.trim().split(/\s+/).filter(Boolean).length;
+    const msg = palavras > 0
+      ? `Apagar ${palavras} palavra(s) transcrita(s)? Esta ação não pode ser desfeita.`
+      : 'Parar a gravação e limpar? Esta ação não pode ser desfeita.';
+    if (!confirm(msg)) return;
+  }
   if (S.isRecording) stopTranscription();
   S.finalTranscript = ''; S.sentences = []; S.seconds = 0;
   el.tFinal.innerHTML = ''; el.tInterim.textContent = '';
   el.tPh.style.display = 'block';
   el.timer.textContent = '00:00';
   updateWordCount();
-  S.summaryGenerated = false; S.summaryText = '';
-  el.sumBox.classList.remove('visible');
-  el.btnExpSum.disabled = true;
-  el.sumBox.innerHTML = '';
   localStorage.removeItem(LS_KEY);
   el.saveLbl.textContent = '';
   setLiveBadge('idle');
-  setStatus('idle', 'Tudo limpo. Pronto para nova sessão.');
+  setStatus('idle', 'Pronto para nova sessão.');
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -1948,11 +2117,27 @@ async function copyWithPrompt() {
   const date     = new Date().toLocaleString('pt-BR');
 
   // Contexto específico da disciplina
-  const discCtx = DISC_CONTEXT[discVal] || DISC_CONTEXT[''];
+  const discContextMap = {
+    sensoriamento: 'Contexto da disciplina: Sensoriamento Remoto e SIG aplicados à Agronomia. ' +
+      'Termos técnicos esperados: NDVI, SIG, LiDAR, VANT, georreferenciamento, ' +
+      'ortorretificação, classificação supervisionada, Sentinel, Landsat, MODIS, ' +
+      'QGIS, ArcGIS, GEE, shapefile, reflectância, albedo, WGS84, SIRGAS2000, ' +
+      'agricultura de precisão, índice de área foliar.',
+    agronomia: 'Contexto da disciplina: Agronomia. ' +
+      'Termos técnicos esperados: fitossanitário, rizosfera, fenologia, CTC, pH, ' +
+      'macronutriente, micronutriente, calagem, adubação verde, manejo integrado de pragas, ' +
+      'evapotranspiração, plantio direto, melhoramento genético, OGM, biologia molecular.',
+    direito: 'Contexto da disciplina: Direito. ' +
+      'Termos técnicos esperados: habeas corpus, mandado de segurança, coisa julgada, ' +
+      'contraditório, ampla defesa, tutela antecipada, liminar, STF, STJ, CPC, ' +
+      'Constituição Federal, litispendência, devido processo legal, jurisprudência.',
+    custom: '',
+  };
+  const discCtx = discContextMap[discVal] || '';
 
-  // Transcrição com marcação de falante
+  // Transcrição sem marcação de falante
   const transcriptFormatted = S.sentences.length > 0
-    ? S.sentences.map(s => `[${s.speaker === 'P' ? 'Professor' : 'Aluno'}] ${s.text}`).join('\n')
+    ? S.sentences.map(s => s.text).join('\n')
     : S.finalTranscript.trim();
 
   // ── Prompt estruturado ──────────────────────────────────────
@@ -2018,14 +2203,24 @@ Gere agora o resumo estruturado seguindo todas as instruções acima.`;
     // Esconder feedback após 20s
     setTimeout(() => { fb.style.display = 'none'; }, 20000);
   } catch(e) {
-    // Fallback: abrir em nova janela de texto
-    const win = window.open('', '_blank');
-    if (win) {
-      win.document.write('<pre style="font-family:monospace;font-size:14px;padding:20px;white-space:pre-wrap;">' + prompt.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>');
-      win.document.title = 'Prompt para IA — TranscriçãoViva';
-      setStatus('ok', '🤖 Prompt aberto em nova aba. Selecione tudo (Ctrl+A) e copie (Ctrl+C).');
-    } else {
-      alert('Não foi possível copiar automaticamente. Permita pop-ups ou use outro navegador.');
+    // Fallback mobile: mostrar textarea selecionável na própria página
+    const fb = document.getElementById('copyPromptFeedback');
+    if (fb) {
+      let ta = document.getElementById('promptFallbackArea');
+      if (!ta) {
+        ta = document.createElement('textarea');
+        ta.id = 'promptFallbackArea';
+        ta.readOnly = true;
+        ta.style.cssText = 'width:100%;height:160px;margin-top:0.75rem;background:var(--bg-secondary);' +
+          'border:1px solid var(--border-acc);border-radius:var(--r);color:var(--text-primary);' +
+          'font-family:var(--font-mono);font-size:0.75rem;padding:0.75rem;resize:vertical;';
+        ta.setAttribute('aria-label', 'Texto do prompt para copiar');
+        fb.appendChild(ta);
+      }
+      ta.value = prompt;
+      fb.style.display = 'block';
+      setTimeout(() => { ta.select(); ta.focus(); }, 100);
+      setStatus('ok', '🤖 Selecione o texto abaixo e copie (Ctrl+A / Ctrl+C).');
     }
   }
 }
@@ -2049,9 +2244,8 @@ function exportTxt() {
     '',
   ];
 
-  // Incluir marcação de falante
   for (const s of S.sentences) {
-    lines.push(`[${s.speaker}] ${s.text}`);
+    lines.push(s.text);
   }
 
   dlFile(lines.join('\n'), 'transcricao.txt', 'text/plain');
@@ -2061,31 +2255,16 @@ function exportJson() {
   if (!S.finalTranscript.trim()) { alert('Nenhuma transcrição para exportar.'); return; }
   const data = {
     meta: {
-      exportedAt:  new Date().toISOString(),
-      duration:    fmtTime(S.seconds),
-      wordCount:   S.finalTranscript.trim().split(/\s+/).filter(Boolean).length,
+      exportedAt:    new Date().toISOString(),
+      duration:      fmtTime(S.seconds),
+      wordCount:     S.finalTranscript.trim().split(/\s+/).filter(Boolean).length,
       sentenceCount: S.sentences.length,
-      discipline:  el.disc.value,
+      discipline:    el.disc.value,
     },
     fullTranscript: S.finalTranscript.trim(),
     sentences: S.sentences,
-    summary:   S.summaryText || null,
   };
   dlFile(JSON.stringify(data, null, 2), 'transcricao.json', 'application/json');
-}
-
-function exportSummaryTxt() {
-  if (!S.summaryText) return;
-  const content = [
-    '════════════════════════════════════',
-    '         RESUMO DA AULA',
-    '════════════════════════════════════',
-    `Gerado em : ${new Date().toLocaleString('pt-BR')}`,
-    `Disciplina: ${el.disc.options[el.disc.selectedIndex]?.text || '—'}`,
-    '',
-    S.summaryText,
-  ].join('\n');
-  dlFile(content, 'resumo-aula.txt', 'text/plain');
 }
 
 function dlFile(content, name, mime) {
@@ -2097,215 +2276,9 @@ function dlFile(content, name, mime) {
 }
 
 /* ──────────────────────────────────────────────────────────────
-   GERAR RESUMO COM IA
+   SISTEMA DE ABAS E UI
    ────────────────────────────────────────────────────────────── */
-async function generateSummary() {
-  const key = el.apiKey.value.trim();
-  if (!key) { alert('⚠️ Insira sua chave de API antes de gerar o resumo.'); el.apiKey.focus(); return; }
-
-  const transcript = S.finalTranscript.trim();
-  if (transcript.length < 80) { alert('⚠️ Transcrição muito curta. Grave mais conteúdo.'); return; }
-
-  el.loader.classList.add('visible');
-  el.sumBox.classList.remove('visible');
-  el.btnSum.disabled = true;
-  el.btnSum.textContent = '⏳ Gerando…';
-
-  const disc    = el.disc.value;
-  const discCtx = DISC_CONTEXT[disc] || DISC_CONTEXT[''];
-
-  const systemPrompt = `Você é um assistente especializado em produzir resumos acadêmicos estruturados a partir de transcrições de aulas, voltados para estudantes com deficiência auditiva que dependem exclusivamente do texto para acompanhar o conteúdo.
-
-${discCtx}
-
-REGRAS DE FORMATAÇÃO (obrigatórias):
-- Responda SEMPRE em português brasileiro formal.
-- Comece com um título da aula (estimado a partir do conteúdo).
-- Divida em seções com ### Título da Seção.
-- Use bullet points (- item) para listar conceitos, exemplos e pontos-chave.
-- Corrija implicitamente erros de transcrição que sejam óbvios pelo contexto.
-- Ao final inclua uma seção ### Termos-Chave com os principais termos técnicos identificados.
-- Inclua uma seção ### Para Fixar com 3-5 perguntas de revisão curtas sobre o conteúdo.
-- Seja objetivo e preciso. Não invente conteúdo que não esteja na transcrição.`;
-
-  const userPrompt = `Transcrição da aula (com marcação de falante — P=Professor, A=Aluno):\n\n${
-    S.sentences.map(s => `[${s.speaker}] ${s.text}`).join('\n')
-  }\n\nGere o resumo estruturado conforme as instruções.`;
-
-  const prov = el.apiProv.value;
-
-  // Mapeia provedor → função de chamada
-  const callers = { anthropic: callAnthropic, openai: callOpenAI, gemini: callGemini };
-
-  try {
-    const rawText = await (callers[prov] || callAnthropic)(key, systemPrompt, userPrompt);
-    renderSummary(rawText);
-  } catch(e) {
-    const msg = e.message || String(e);
-    setStatus('err', `❌ <strong>Erro ao gerar resumo:</strong> ${msg}`);
-    // Mostrar erro também dentro do card de resumo para maior visibilidade
-    el.sumBox.innerHTML = `<div style="color:var(--danger);font-family:var(--font-mono);font-size:0.9rem;padding:1rem;border:1px solid rgba(239,68,68,.3);border-radius:var(--r);background:rgba(239,68,68,.06);">
-      ⚠️ <strong>Falha na chamada à API</strong><br><br>${msg}<br><br>
-      <span style="color:var(--text-second);">Dicas:<br>
-      • Confirme que copiou a chave completa (sem espaços)<br>
-      • Para Gemini: gere a chave em <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent);">aistudio.google.com</a><br>
-      • Verifique se a chave tem a API "Generative Language" habilitada no Google Cloud<br>
-      • Tente com outro provedor (Anthropic ou OpenAI)</span>
-    </div>`;
-    el.sumBox.classList.add('visible');
-    el.loader.classList.remove('visible');
-    el.btnSum.disabled = false;
-    el.btnSum.textContent = '✨ Gerar Resumo com IA';
-  }
-}
-
-async function callAnthropic(key, system, user) {
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2000,
-      system,
-      messages: [{ role: 'user', content: user }],
-    }),
-  });
-  if (!r.ok) { const d = await r.json().catch(()=>({})); throw new Error(d.error?.message || `HTTP ${r.status}`); }
-  const d = await r.json();
-  return d.content?.[0]?.text || '';
-}
-
-async function callGemini(key, system, user) {
-  // Google Gemini 2.0 Flash via REST API
-  const model = 'gemini-2.0-flash';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
-
-  // Gemini recebe system instruction separado do conteúdo do usuário
-  const body = {
-    systemInstruction: { parts: [{ text: system }] },
-    contents: [{ role: 'user', parts: [{ text: user }] }],
-    generationConfig: {
-      maxOutputTokens: 2048,
-      temperature: 0.3,
-      responseMimeType: 'text/plain',
-    },
-    safetySettings: [
-      { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
-    ],
-  };
-
-  let r;
-  try {
-    r = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-  } catch (netErr) {
-    throw new Error('Falha de rede ao contatar a API do Gemini: ' + netErr.message);
-  }
-
-  // Tratar erros HTTP com mensagem descritiva
-  if (!r.ok) {
-    let msg = `HTTP ${r.status}`;
-    try {
-      const errData = await r.json();
-      msg = errData?.error?.message || errData?.error?.status || msg;
-    } catch(_) {}
-    if (r.status === 400) throw new Error('Chave de API inválida ou requisição malformada. Verifique a chave do Gemini. (' + msg + ')');
-    if (r.status === 403) throw new Error('Acesso negado. A chave não tem permissão para usar a API Gemini. (' + msg + ')');
-    if (r.status === 429) throw new Error('Limite de requisições atingido. Aguarde alguns segundos e tente novamente.');
-    throw new Error('Erro na API Gemini: ' + msg);
-  }
-
-  const d = await r.json();
-
-  // Verificar bloqueio por safety filters
-  const candidate = d.candidates?.[0];
-  if (!candidate) {
-    const blockReason = d.promptFeedback?.blockReason;
-    throw new Error('Gemini não retornou resposta.' + (blockReason ? ' Motivo: ' + blockReason : ' Verifique se a chave está ativa no Google AI Studio.'));
-  }
-
-  const finishReason = candidate.finishReason;
-  if (finishReason === 'SAFETY') {
-    throw new Error('O conteúdo foi bloqueado pelos filtros de segurança do Gemini. Tente reduzir o tamanho da transcrição ou use outro provedor.');
-  }
-  if (finishReason === 'RECITATION') {
-    throw new Error('Gemini recusou gerar o conteúdo por política de citação. Use outro provedor.');
-  }
-
-  const text = candidate?.content?.parts?.map(p => p.text || '').join('') || '';
-  if (!text.trim()) {
-    throw new Error('Gemini retornou resposta vazia. Verifique se a chave está ativa e se há créditos disponíveis no Google AI Studio.');
-  }
-  return text;
-}
-
-async function callOpenAI(key, system, user) {
-  const r = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${key}`,
-    },
-    body: JSON.stringify({
-      model: 'gpt-4o',
-      max_tokens: 2000,
-      temperature: 0.3,
-      messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
-    }),
-  });
-  if (!r.ok) { const d = await r.json().catch(()=>({})); throw new Error(d.error?.message || `HTTP ${r.status}`); }
-  const d = await r.json();
-  return d.choices?.[0]?.message?.content || '';
-}
-
-/* ──────────────────────────────────────────────────────────────
-   RENDERIZAR RESUMO
-   ────────────────────────────────────────────────────────────── */
-function renderSummary(raw) {
-  S.summaryText      = raw;
-  S.summaryGenerated = true;
-
-  // Markdown → HTML (básico)
-  let html = raw
-    .replace(/^#### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^### (.+)$/gm,  '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm,   '<h3>$1</h3>')
-    .replace(/^# (.+)$/gm,    '<h3>$1</h3>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,     '<em>$1</em>')
-    .replace(/^- (.+)$/gm,    '<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
-    .replace(/\n\n/g, '</p><p>');
-
-  el.sumBox.innerHTML = `<p>${html}</p>`;
-  el.sumBox.classList.add('visible');
-  el.loader.classList.remove('visible');
-  el.btnSum.disabled   = false;
-  el.btnSum.textContent = '🔄 Regenerar Resumo';
-  el.btnExpSum.disabled = false;
-
-  setStatus('ok', '✅ Resumo gerado com sucesso!');
-  notifyTab('resumo', '✓');
-  el.sumBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-/* ──────────────────────────────────────────────────────────────
-   UI — STATUS / MIC / BOTÕES
-   ────────────────────────────────────────────────────────────── */
-/* ──────────────────────────────────────────────────────────────
-   SISTEMA DE ABAS
-   ────────────────────────────────────────────────────────────── */
-const TABS = ['transcricao','audio','config','exportar','resumo'];
+const TABS = ['transcricao','audio','config','historico','exportar'];
 
 function switchTab(name) {
   TABS.forEach(t => {
@@ -2333,6 +2306,11 @@ function switchTab(name) {
   // Rodar diagnóstico ao abrir Config
   if (name === 'config') {
     setTimeout(runDiagnostic, 50);
+    setTimeout(listMicrophones, 100);
+  }
+  // Renderizar histórico ao abrir
+  if (name === 'historico') {
+    renderSessionHistory();
   }
 
   // Limpar badge ao abrir a aba
@@ -2375,14 +2353,9 @@ function setMic(active) {
 
 function updateBtns({ rec, pau }) {
   el.btnStart.disabled = rec && !pau;
-  el.btnStart.textContent = pau ? '▶️ Retomar' : '🎙️ Iniciar Transcrição';
+  el.btnStart.textContent = pau ? '▶️ Retomar' : '🎙️ Iniciar';
   el.btnPause.disabled = !rec || pau;
   el.btnStop.disabled  = !rec;
-  syncFab({ rec, pau });
-}
-
-function toggleKey() {
-  el.apiKey.type = el.apiKey.type === 'password' ? 'text' : 'password';
 }
 
 /* ──────────────────────────────────────────────────────────────
@@ -2524,58 +2497,21 @@ async function requestMicFromModal() {
    Mostra o banner informativo certo para cada situação.
    Chamado automaticamente no carregamento — NÃO solicita microfone. */
 async function checkMicPermission() {
-  // ── Caso 1: Permissions API disponível (Chrome, Edge, Firefox) ──
-  if (navigator.permissions) {
-    try {
+  // Verificação SILENCIOSA — não abre modal nem solicita acesso.
+  // O gesto do usuário (clique em Iniciar) fará a solicitação real.
+  try {
+    if (navigator.permissions) {
       const perm = await navigator.permissions.query({ name: 'microphone' });
-
       if (perm.state === 'granted') {
-        // Já autorizado — sem modal, apenas atualizar indicador
-        setStatus('ok', '✅ Microfone disponível. Clique em <strong>Iniciar Transcrição</strong>.');
-        watchPermissionChange();
-        return;
+        setStatus('ok', '✅ Microfone disponível. Toque em <strong>🎙️ Iniciar</strong> para começar.');
+      } else if (perm.state === 'denied') {
+        setStatus('err', '🚫 Microfone bloqueado. Toque em <strong>🎙️ Iniciar</strong> para ver como desbloquear.');
       }
-
-      if (perm.state === 'denied') {
-        // Bloqueado pelo usuário ou pelo sistema
-        showMicModal('denied');
-        watchPermissionChange();
-        return;
-      }
-
-      // 'prompt' — nunca foi solicitado; mostrar banner informativo
-      // (NÃO chamar getUserMedia aqui — só quando o usuário clicar)
-      showMicModal('prompt');
+      // 'prompt': não fazer nada — usuário verá a solicitação ao clicar Iniciar
       watchPermissionChange();
-      return;
-    } catch (_) {
-      // Permissions API não suporta 'microphone' neste browser — seguir para fallback
     }
-  }
-
-  // ── Caso 2: Safari / browsers sem Permissions API ──
-  // Verificar se há microfone sem pedir acesso
-  if (navigator.mediaDevices?.enumerateDevices) {
-    try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      // Se labels estão preenchidos, permissão já foi concedida antes
-      const mics = devices.filter(d => d.kind === 'audioinput');
-      if (mics.length === 0) {
-        showMicModal('unavailable');
-        return;
-      }
-      const alreadyGranted = mics.some(d => d.label && d.label !== '');
-      if (alreadyGranted) {
-        setStatus('ok', '✅ Microfone disponível. Clique em <strong>Iniciar Transcrição</strong>.');
-        return;
-      }
-      // Tem microfone mas sem permissão confirmada
-      showMicModal('prompt');
-    } catch (_) {
-      showMicModal('prompt');
-    }
-  } else {
-    showMicModal('prompt');
+  } catch(_) {
+    // Permissions API indisponível — ok, getUserMedia vai lidar ao clicar
   }
 }
 
@@ -2599,16 +2535,179 @@ async function watchPermissionChange() {
 }
 
 /* ──────────────────────────────────────────────────────────────
-   FAB — SINCRONIZAR BOTÕES FLUTUANTES COM ESTADO
+   HISTÓRICO DE SESSÕES (até 5 sessões no localStorage)
    ────────────────────────────────────────────────────────────── */
-function syncFab({ rec, pau }) {
-  // Sincronizar rec-bar (mesmos IDs dos botões principais)
-  // updateBtns já cuida disso — syncFab mantido por compatibilidade
+const LS_HISTORY_KEY = 'tv2_history';
+const MAX_HISTORY = 5;
+
+function saveToHistory(data) {
+  try {
+    const raw = localStorage.getItem(LS_HISTORY_KEY);
+    let history = raw ? JSON.parse(raw) : [];
+    // Adicionar nova sessão no início
+    history.unshift({
+      id:         Date.now(),
+      savedAt:    new Date().toISOString(),
+      discipline: el.disc.options[el.disc.selectedIndex]?.text || '—',
+      duration:   fmtTime(data.seconds || 0),
+      words:      (data.transcript || '').trim().split(/\s+/).filter(Boolean).length,
+      sentences:  (data.sentences || []).length,
+      transcript: data.transcript,
+      sentences_data: data.sentences,
+      seconds:    data.seconds,
+    });
+    // Manter apenas as últimas MAX_HISTORY
+    if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+    localStorage.setItem(LS_HISTORY_KEY, JSON.stringify(history));
+    // Badge na aba histórico
+    notifyTab('historico', history.length);
+  } catch(e) {}
+}
+
+function renderSessionHistory() {
+  const list  = document.getElementById('sessionList');
+  const empty = document.getElementById('sessionEmpty');
+  if (!list) return;
+  try {
+    const raw = localStorage.getItem(LS_HISTORY_KEY);
+    const history = raw ? JSON.parse(raw) : [];
+    if (!history.length) {
+      if (empty) empty.style.display = 'block';
+      // Remover itens anteriores
+      list.querySelectorAll('.session-item').forEach(el => el.remove());
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+    list.querySelectorAll('.session-item').forEach(el => el.remove());
+    history.forEach((sess, idx) => {
+      const date = new Date(sess.savedAt).toLocaleString('pt-BR', {
+        day:'2-digit', month:'2-digit', year:'numeric',
+        hour:'2-digit', minute:'2-digit'
+      });
+      const item = document.createElement('div');
+      item.className = 'session-item';
+      item.innerHTML = `
+        <div class="session-meta">
+          <div class="session-date">${date} · ${sess.discipline}</div>
+          <div class="session-info">${sess.words} palavras · ${sess.sentences} frases · ${sess.duration}</div>
+        </div>
+        <div class="session-actions">
+          <button class="btn btn-neu btn-sm" onclick="restoreSession(${idx})" title="Restaurar sessão">📥 Restaurar</button>
+          <button class="btn btn-stop btn-sm" onclick="deleteSession(${idx})" title="Excluir sessão">🗑️</button>
+        </div>`;
+      list.appendChild(item);
+    });
+  } catch(e) {}
+}
+
+function restoreSession(idx) {
+  try {
+    const raw = localStorage.getItem(LS_HISTORY_KEY);
+    const history = raw ? JSON.parse(raw) : [];
+    const sess = history[idx];
+    if (!sess) return;
+    if (S.finalTranscript.trim()) {
+      if (!confirm('Substituir a transcrição atual pela sessão salva?')) return;
+    }
+    if (S.isRecording) stopTranscription();
+    S.finalTranscript = sess.transcript || '';
+    S.sentences       = sess.sentences_data || [];
+    S.seconds         = sess.seconds || 0;
+    el.tPh.style.display = 'none';
+    el.tFinal.innerHTML = '';
+    for (const s of S.sentences) appendPhrase(s.text);
+    updateWordCount();
+    el.timer.textContent = fmtTime(S.seconds);
+    setLiveBadge('done');
+    setStatus('ok', `✅ Sessão de ${sess.discipline} restaurada (${sess.words} palavras).`);
+    switchTab('transcricao');
+  } catch(e) {}
+}
+
+function deleteSession(idx) {
+  try {
+    const raw = localStorage.getItem(LS_HISTORY_KEY);
+    let history = raw ? JSON.parse(raw) : [];
+    history.splice(idx, 1);
+    localStorage.setItem(LS_HISTORY_KEY, JSON.stringify(history));
+    renderSessionHistory();
+    notifyTab('historico', history.length || '');
+  } catch(e) {}
+}
+
+function clearAllHistory() {
+  if (!confirm('Apagar todo o histórico de sessões? Esta ação não pode ser desfeita.')) return;
+  localStorage.removeItem(LS_HISTORY_KEY);
+  renderSessionHistory();
+  const badge = document.getElementById('badge-historico');
+  if (badge) badge.classList.remove('visible');
 }
 
 /* ──────────────────────────────────────────────────────────────
-   DIAGNÓSTICO DO DISPOSITIVO
+   SELETOR DE MICROFONE
    ────────────────────────────────────────────────────────────── */
+async function listMicrophones() {
+  const sel = document.getElementById('micDeviceSelect');
+  if (!sel) return;
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    const mics = devices.filter(d => d.kind === 'audioinput');
+    if (!mics.length) return;
+    // Preservar seleção atual
+    const current = sel.value;
+    // Limpar e repopular
+    sel.innerHTML = '<option value="">— Microfone padrão do sistema —</option>';
+    mics.forEach(mic => {
+      const opt = document.createElement('option');
+      opt.value = mic.deviceId;
+      opt.textContent = mic.label || `Microfone ${mic.deviceId.slice(0, 8)}…`;
+      sel.appendChild(opt);
+    });
+    if (current) sel.value = current;
+  } catch(e) {}
+}
+
+function saveMicDevice() {
+  try {
+    const sel = document.getElementById('micDeviceSelect');
+    if (sel) localStorage.setItem('tv2_mic_device', sel.value);
+  } catch(e) {}
+}
+
+function loadMicDevice() {
+  try {
+    const saved = localStorage.getItem('tv2_mic_device');
+    const sel   = document.getElementById('micDeviceSelect');
+    if (saved && sel) sel.value = saved;
+  } catch(e) {}
+}
+
+/* ──────────────────────────────────────────────────────────────
+   INDICADOR DE QUALIDADE DE RECONHECIMENTO
+   ────────────────────────────────────────────────────────────── */
+function updateQualityBadge(confidence) {
+  const badge = document.getElementById('qualityBadge');
+  if (!badge) return;
+  if (confidence === null || confidence === undefined || confidence < 0) {
+    badge.className = 'quality-badge idle';
+    badge.textContent = '— confiança';
+    return;
+  }
+  const pct = Math.round(confidence * 100);
+  if (pct >= 80) {
+    badge.className = 'quality-badge high';
+    badge.textContent = `✓ ${pct}% confiança`;
+  } else if (pct >= 50) {
+    badge.className = 'quality-badge medium';
+    badge.textContent = `⚠ ${pct}% confiança`;
+  } else {
+    badge.className = 'quality-badge low';
+    badge.textContent = `✗ ${pct}% confiança`;
+  }
+}
+
+
+
 async function runDiagnostic() {
   const el = document.getElementById('diagContent');
   if (!el) return;
@@ -2685,9 +2784,17 @@ async function runDiagnostic() {
 /* ──────────────────────────────────────────────────────────────
    INICIALIZAÇÃO
    ────────────────────────────────────────────────────────────── */
+
+/* Atualizar badge de dicionário ativo */
+function updateDictBadge() {
+  const badge = document.getElementById('dictActiveBadge');
+  if (!badge) return;
+  const hasDict = el.dictArea && el.dictArea.value.trim().split('\n')
+    .some(line => line.includes('→') && line.split('→')[0].trim() !== line.split('→')[1].trim());
+  badge.style.display = hasDict ? 'inline-flex' : 'none';
+}
 (function init() {
   updateBtns({ rec: false, pau: false });
-  syncFab({ rec: false, pau: false });
   updateWordCount();
   loadSavedSession();
 
@@ -2706,11 +2813,23 @@ async function runDiagnostic() {
     setFontSize(savedFont);
   }
 
+  // Restaurar disciplina, dicionário e modo professor
+  loadDisciplinePrefs();
+
+  // Restaurar microfone preferido (sem labels ainda — precisamos de permissão)
+  loadMicDevice();
+
+  // Exibir badge no histórico se houver sessões salvas
+  try {
+    const raw = localStorage.getItem(LS_HISTORY_KEY);
+    const hist = raw ? JSON.parse(raw) : [];
+    if (hist.length) notifyTab('historico', hist.length);
+  } catch(_) {}
+
   // Ativar aba de transcrição
   switchTab('transcricao');
 
   // Verificar estado da permissão após breve delay para UI renderizar
-  // checkMicPermission() apenas LÊ o estado — não solicita acesso
   setTimeout(checkMicPermission, 800);
 
   // Pré-carregar diagnóstico em background
