@@ -1,0 +1,2546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="theme-color" content="#08090d"/>
+<title>TranscriçãoViva v2.0 — Aulas Acessíveis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TRANSCRIÇÃOVIVA v2.0 — TEMA ESCURO / ALTA ACESSIBILIDADE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Variáveis de tema ── */
+:root {
+  --bg-primary:   #08090d;
+  --bg-secondary: #0e1118;
+  --bg-card:      #12161f;
+  --bg-card2:     #171c28;
+  --accent:       #00e5ff;
+  --accent-dim:   #00b8cc;
+  --accent-glow:  rgba(0,229,255,0.14);
+  --purple:       #8b5cf6;
+  --purple-glow:  rgba(139,92,246,0.15);
+  --success:      #10b981;
+  --warning:      #f59e0b;
+  --danger:       #ef4444;
+  --speaker-a:    #34d399;   /* professor */
+  --speaker-b:    #60a5fa;   /* aluno */
+  --text-primary: #eef2ff;
+  --text-second:  #8892a4;
+  --text-muted:   #4a5568;
+  --border:       #1e2535;
+  --border-acc:   rgba(0,229,255,0.28);
+  --font-ui:      'Syne', sans-serif;
+  --font-mono:    'Space Mono', monospace;
+  --r:  12px;
+  --rl: 20px;
+  --fs-base: 20px;           /* mínimo exigido por acessibilidade */
+  --fs-sm:   0.85rem;
+  --fs-xs:   0.78rem;
+}
+
+/* ── Temas de contraste ── */
+body.theme-hc {
+  --bg-primary: #000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #111;
+  --bg-card2: #181818;
+  --border: #333;
+  --text-primary: #fff;
+  --text-second: #ccc;
+  --text-muted: #888;
+  --accent: #00ffff;
+  --success: #00ff88;
+  --warning: #ffcc00;
+  --danger: #ff4444;
+}
+
+body.theme-light {
+  --bg-primary: #f0f4ff;
+  --bg-secondary: #e8edf8;
+  --bg-card: #fff;
+  --bg-card2: #f5f8ff;
+  --border: #d1d9ef;
+  --text-primary: #0a0c18;
+  --text-second: #3a4460;
+  --text-muted: #7a89a8;
+  --accent: #0077cc;
+  --accent-glow: rgba(0,119,204,0.12);
+  --success: #087a52;
+  --warning: #b45309;
+  --danger: #c0392b;
+  --purple: #6d28d9;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: var(--fs-base);
+  line-height: 1.65;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 15% 0%, rgba(0,229,255,0.055) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 70% at 90% 110%, rgba(139,92,246,0.07) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+body.theme-light::before { display: none; }
+
+/* ── Layout ── */
+.wrap {
+  position: relative; z-index: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.5rem 1.4rem 5rem;
+}
+
+/* ── Header ── */
+header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; flex-wrap: wrap;
+  gap: 1rem; margin-bottom: 2rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-title {
+  font-size: 1.9rem; font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(90deg, var(--accent), #a78bfa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+
+.logo-sub {
+  font-size: var(--fs-xs); font-family: var(--font-mono);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-muted); margin-top: 0.3rem;
+}
+
+.badge-v2 {
+  display: inline-block;
+  background: linear-gradient(135deg, #4f1dcb, var(--purple));
+  color: #fff; font-size: 0.65rem; font-family: var(--font-mono);
+  padding: 0.18rem 0.55rem; border-radius: 100px;
+  vertical-align: top; margin-left: 0.5rem; margin-top: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+/* Header direito */
+.header-right {
+  display: flex; align-items: center;
+  gap: 0.75rem; flex-wrap: wrap;
+}
+
+/* ── Micro-indicadores ── */
+.pill {
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  padding: 0.4rem 0.85rem; border-radius: 100px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: var(--fs-xs);
+  color: var(--text-muted); transition: all 0.3s;
+  white-space: nowrap;
+}
+.pill.active { color: var(--success); border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.07); }
+.pill.paused { color: var(--warning); border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.06); }
+
+.dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: currentColor; transition: all 0.3s;
+}
+.pill.active .dot { animation: blink 1.1s infinite; }
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+
+.timer { font-family: var(--font-mono); font-size: 1.05rem; color: var(--accent); min-width: 60px; }
+
+/* ── Barra de status ── */
+.statusbar {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.65rem 1rem; border-radius: var(--r);
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  font-family: var(--font-mono); font-size: var(--fs-sm);
+  color: var(--text-second); margin-bottom: 1.25rem;
+  transition: all 0.3s; min-height: 48px;
+}
+.statusbar.rec  { border-color: rgba(16,185,129,.4); color: var(--success); background: rgba(16,185,129,.06); }
+.statusbar.pau  { border-color: rgba(245,158,11,.4);  color: var(--warning); background: rgba(245,158,11,.06); }
+.statusbar.err  { border-color: rgba(239,68,68,.4);   color: var(--danger);  background: rgba(239,68,68,.06); }
+.statusbar.ok   { border-color: rgba(16,185,129,.3);  color: var(--success); background: rgba(16,185,129,.05); }
+
+/* ── Card ── */
+.card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--rl); padding: 1.6rem;
+  margin-bottom: 1.25rem; transition: border-color 0.3s;
+}
+.card:hover { border-color: rgba(0,229,255,0.1); }
+
+.card-title {
+  font-size: var(--fs-xs); font-family: var(--font-mono);
+  text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--text-second); margin-bottom: 1.1rem;
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.card-title::before {
+  content: ''; width: 18px; height: 2px;
+  background: var(--accent); border-radius: 2px; flex-shrink: 0;
+}
+
+/* ── Botões ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 0.55rem; padding: 0.8rem 1.3rem;
+  border-radius: var(--r); border: 1px solid transparent;
+  font-family: var(--font-ui); font-size: 1rem; font-weight: 600;
+  cursor: pointer; transition: all 0.18s; letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.btn:disabled { opacity: 0.32; cursor: not-allowed; pointer-events: none; }
+
+.btn-start { background: var(--accent); color: #08090d; box-shadow: 0 0 18px rgba(0,229,255,.2); }
+.btn-start:hover { background: #00f0ff; box-shadow: 0 0 28px rgba(0,229,255,.38); transform: translateY(-1px); }
+
+.btn-pause { background: var(--bg-secondary); color: var(--warning); border-color: rgba(245,158,11,.3); }
+.btn-pause:hover { background: rgba(245,158,11,.1); border-color: var(--warning); transform: translateY(-1px); }
+
+.btn-stop { background: var(--bg-secondary); color: var(--danger); border-color: rgba(239,68,68,.3); }
+.btn-stop:hover { background: rgba(239,68,68,.1); border-color: var(--danger); transform: translateY(-1px); }
+
+.btn-neu { background: var(--bg-secondary); color: var(--text-second); border-color: var(--border); }
+.btn-neu:hover { color: var(--text-primary); border-color: rgba(240,244,255,.2); background: var(--bg-card2); transform: translateY(-1px); }
+
+.btn-ai { background: linear-gradient(135deg, #4f1dcb, var(--purple)); color: #fff; box-shadow: 0 0 18px var(--purple-glow); }
+.btn-ai:hover { box-shadow: 0 0 28px rgba(139,92,246,.38); transform: translateY(-1px); }
+
+.btn-export-sum { background: var(--bg-secondary); color: var(--success); border-color: rgba(16,185,129,.3); }
+.btn-export-sum:hover { background: rgba(16,185,129,.1); border-color: var(--success); transform: translateY(-1px); }
+
+.btn-sm { padding: 0.5rem 0.9rem; font-size: 0.88rem; }
+
+/* ── Grid de controles ── */
+.ctrl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.8rem;
+}
+
+/* ── Configurações de acessibilidade ── */
+.acc-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.9rem; }
+.acc-label { font-size: var(--fs-sm); color: var(--text-second); font-family: var(--font-mono); }
+
+.seg-group { display: flex; border-radius: var(--r); overflow: hidden; border: 1px solid var(--border); }
+.seg-btn {
+  flex: 1; padding: 0.45rem 0.9rem;
+  background: var(--bg-secondary); color: var(--text-second);
+  border: none; cursor: pointer; font-family: var(--font-mono);
+  font-size: var(--fs-xs); transition: all 0.18s;
+  border-right: 1px solid var(--border);
+}
+.seg-btn:last-child { border-right: none; }
+.seg-btn.active { background: var(--accent); color: #08090d; font-weight: 700; }
+.seg-btn:hover:not(.active) { background: var(--bg-card2); color: var(--text-primary); }
+
+/* Slider de fonte */
+.font-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 140px; height: 6px;
+  background: var(--border); border-radius: 3px; cursor: pointer;
+}
+.font-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); cursor: pointer;
+  box-shadow: 0 0 8px rgba(0,229,255,.4);
+}
+.font-val { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--accent); min-width: 40px; }
+
+/* ── Disciplina / dicionário ── */
+.field-row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: flex-start; }
+
+.select-field, .text-field, .textarea-field {
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--r); color: var(--text-primary);
+  font-family: var(--font-mono); font-size: var(--fs-sm);
+  padding: 0.65rem 0.9rem; transition: border-color 0.2s;
+}
+.select-field:focus, .text-field:focus, .textarea-field:focus {
+  outline: none; border-color: var(--border-acc);
+}
+.select-field { cursor: pointer; }
+.text-field { flex: 1; min-width: 200px; }
+.textarea-field { width: 100%; resize: vertical; min-height: 72px; line-height: 1.5; }
+
+/* ── Visualizador de áudio ── */
+#audioCanvas {
+  width: 100%; height: 64px;
+  border-radius: var(--r);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  display: block;
+}
+
+.volume-bar-wrap {
+  display: flex; align-items: center; gap: 0.75rem; margin-top: 0.6rem;
+}
+.volume-label { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted); min-width: 80px; }
+.volume-bar-bg {
+  flex: 1; height: 10px; border-radius: 5px;
+  background: var(--bg-secondary); border: 1px solid var(--border); overflow: hidden;
+}
+.volume-bar-fill {
+  height: 100%; width: 0%; border-radius: 5px;
+  background: linear-gradient(90deg, var(--success), var(--accent));
+  transition: width 0.08s ease-out;
+}
+.pause-alert {
+  display: none; align-items: center; gap: 0.6rem;
+  padding: 0.55rem 1rem; border-radius: var(--r);
+  background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.35);
+  color: var(--warning); font-family: var(--font-mono); font-size: var(--fs-sm);
+  margin-top: 0.6rem;
+}
+.pause-alert.visible { display: flex; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+
+/* ── Área de transcrição ── */
+.transcript-area {
+  min-height: 260px; max-height: 420px;
+  overflow-y: auto; padding: 1.1rem;
+  background: var(--bg-secondary); border-radius: var(--r);
+  border: 1px solid var(--border);
+  font-size: var(--fs-base); line-height: 1.85;
+  color: var(--text-primary); scroll-behavior: smooth;
+}
+.transcript-area::-webkit-scrollbar { width: 5px; }
+.transcript-area::-webkit-scrollbar-track { background: transparent; }
+.transcript-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+.t-placeholder {
+  color: var(--text-muted); font-style: italic;
+  font-size: 1rem; text-align: center;
+  margin-top: 2.5rem; font-family: var(--font-mono);
+}
+
+/* Frase recém-reconhecida com animação de destaque */
+@keyframes hi-fade {
+  0%   { background: rgba(0,229,255,.2); border-radius: 4px; padding: 0 3px; }
+  100% { background: transparent; padding: 0; }
+}
+.phrase-new { animation: hi-fade 2.2s ease forwards; }
+
+.t-interim { color: var(--text-muted); font-style: italic; }
+
+/* Marcação de falante */
+.spk-tag {
+  display: inline-block;
+  font-family: var(--font-mono); font-size: 0.7rem;
+  padding: 0.08rem 0.45rem; border-radius: 4px;
+  font-weight: 700; letter-spacing: 0.05em;
+  margin-right: 0.35rem; vertical-align: middle;
+}
+.spk-P { background: rgba(52,211,153,.15); color: var(--speaker-a); }
+.spk-A { background: rgba(96,165,250,.15); color: var(--speaker-b); }
+
+/* Parágrafo por pausa */
+.t-para {
+  display: block; margin-top: 0.85rem;
+  padding-top: 0.85rem; border-top: 1px solid var(--border);
+}
+
+/* Frase editável hover */
+.t-phrase {
+  cursor: text; border-radius: 3px;
+  transition: background 0.15s;
+  display: inline;
+}
+.t-phrase:hover { background: rgba(255,255,255,.05); }
+.t-phrase[contenteditable="true"] {
+  background: rgba(0,229,255,.06);
+  outline: 1px dashed var(--border-acc);
+  padding: 0 3px; border-radius: 3px;
+}
+
+/* Barra info inferior */
+.t-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 0.5rem;
+  margin-top: 0.6rem;
+  font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-muted);
+}
+
+/* ── Indicador de sessão recuperada ── */
+.recovery-banner {
+  display: none; align-items: center; gap: 0.7rem;
+  padding: 0.65rem 1rem; margin-bottom: 1rem;
+  border-radius: var(--r);
+  background: rgba(245,158,11,.09); border: 1px solid rgba(245,158,11,.35);
+  color: var(--warning); font-family: var(--font-mono); font-size: var(--fs-sm);
+}
+.recovery-banner.visible { display: flex; }
+
+/* ── Spinner ── */
+.spinner {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border); border-top-color: var(--purple);
+  animation: spin .75s linear infinite; flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Resumo ── */
+.summary-box {
+  background: linear-gradient(135deg, rgba(139,92,246,.07), rgba(0,229,255,.04));
+  border: 1px solid rgba(139,92,246,.22); border-radius: var(--r);
+  padding: 1.4rem; font-size: 1.05rem; line-height: 1.85;
+  color: var(--text-primary); display: none;
+}
+.summary-box.visible { display: block; animation: fadeIn .4s ease; }
+
+.summary-box h3 { font-size: 1.05rem; color: var(--accent); margin: 1rem 0 0.4rem; }
+.summary-box h3:first-child { margin-top: 0; }
+.summary-box ul { padding-left: 1.35rem; }
+.summary-box li { margin-bottom: 0.35rem; }
+.summary-box p { margin-bottom: 0.7rem; }
+.summary-box strong { color: var(--text-primary); }
+
+.ai-loader {
+  display: none; align-items: center; justify-content: center;
+  gap: 0.75rem; padding: 1.8rem;
+  color: var(--text-second); font-family: var(--font-mono); font-size: var(--fs-sm);
+}
+.ai-loader.visible { display: flex; }
+
+/* ── Input API ── */
+.api-row { display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; }
+.api-input {
+  flex: 1; min-width: 220px;
+  padding: 0.7rem 1rem; background: var(--bg-secondary);
+  border: 1px solid var(--border); border-radius: var(--r);
+  color: var(--text-primary); font-family: var(--font-mono); font-size: var(--fs-sm);
+  transition: border-color 0.2s;
+}
+.api-input:focus { outline: none; border-color: var(--border-acc); }
+.api-input::placeholder { color: var(--text-muted); }
+.api-hint { font-size: var(--fs-xs); color: var(--text-muted); font-family: var(--font-mono); margin-top: 0.45rem; }
+
+/* ── Export group ── */
+.export-grp { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+
+/* ── Speaker key ── */
+.spk-key {
+  display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
+  margin-top: 0.7rem; padding: 0.6rem 0.9rem;
+  background: var(--bg-secondary); border-radius: var(--r); border: 1px solid var(--border);
+  font-size: var(--fs-sm);
+}
+.spk-key-item { display: flex; align-items: center; gap: 0.4rem; }
+
+/* ── Responsivo ── */
+/* ══════════════════════════════════════════════════════
+   RESPONSIVO MOBILE — breakpoints completos
+   ══════════════════════════════════════════════════════ */
+
+/* Tablet (≤ 768px) */
+@media (max-width: 768px) {
+  .wrap { padding: 1rem 1rem 7rem; }  /* espaço para FAB */
+  .card { padding: 1.25rem; }
+  .ctrl-grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+  .api-row { flex-direction: column; }
+  .api-input { min-width: unset; width: 100%; }
+  .acc-row { flex-wrap: wrap; gap: 0.5rem; }
+  .seg-group { flex-wrap: nowrap; overflow-x: auto; }
+  .font-slider { width: 120px; }
+  .field-row { flex-direction: column; }
+  .select-field { width: 100%; }
+  .spk-key { gap: 0.5rem; }
+  .export-grp { gap: 0.5rem; }
+  .export-grp .btn { flex: 1 1 calc(50% - 0.25rem); }
+  .summary-box { font-size: 1rem; }
+  #audioCanvas { height: 52px; }
+}
+
+/* Mobile (≤ 480px) */
+@media (max-width: 480px) {
+  :root {
+    --fs-base: 18px;
+    --r:  10px;
+    --rl: 16px;
+  }
+  .wrap { padding: 0.75rem 0.75rem 7rem; }
+  header { flex-direction: column; gap: 0.6rem; padding-bottom: 1rem; }
+  .logo-title { font-size: 1.4rem; }
+  .logo-sub   { font-size: 0.7rem; }
+  .header-right { width: 100%; justify-content: space-between; }
+  .badge-v2 { font-size: 0.6rem; }
+
+  /* Status bar menor */
+  .statusbar { font-size: 0.8rem; padding: 0.55rem 0.75rem; }
+
+  /* Card mais compacto */
+  .card { padding: 1rem; margin-bottom: 0.9rem; }
+  .card-title { font-size: 0.7rem; margin-bottom: 0.85rem; }
+
+  /* Botões maiores para toque (min 44px altura — WCAG) */
+  .btn { padding: 0.9rem 1rem; font-size: 0.95rem; min-height: 44px; }
+  .btn-sm { padding: 0.65rem 0.85rem; font-size: 0.82rem; min-height: 40px; }
+
+  /* Grid de controles: 2 colunas */
+  .ctrl-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+
+  /* Área de transcrição menor */
+  .transcript-area { min-height: 200px; max-height: 320px; font-size: 1rem; }
+
+  /* Export: 2 colunas */
+  .export-grp { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .export-grp .btn { flex: unset; }
+
+  /* API config */
+  .api-row { gap: 0.5rem; }
+  #apiProvider { width: 100%; min-width: unset; }
+
+  /* Seg buttons menores */
+  .seg-btn { padding: 0.5rem 0.65rem; font-size: 0.7rem; }
+
+  /* Slider de fonte */
+  .font-slider { width: 100px; }
+
+  /* Marcação de falante compacta */
+  .spk-key { flex-direction: column; align-items: flex-start; gap: 0.4rem; padding: 0.5rem 0.7rem; }
+  .spk-key-item { flex-direction: row; gap: 0.5rem; }
+
+  /* Waveform menor */
+  #audioCanvas { height: 44px; }
+  .volume-label { display: none; }
+
+  /* Recovery banner */
+  .recovery-banner { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+
+  /* Resumo */
+  .summary-box h3 { font-size: 0.95rem; }
+  .summary-box li, .summary-box p { font-size: 0.95rem; }
+
+  /* Textarea dicionário */
+  .textarea-field { min-height: 60px; font-size: 0.82rem; }
+
+  /* T footer */
+  .t-footer { flex-direction: column; align-items: flex-start; gap: 0.3rem; }
+}
+
+/* Muito pequeno (≤ 360px) */
+@media (max-width: 360px) {
+  :root { --fs-base: 16px; }
+  .ctrl-grid { grid-template-columns: 1fr; }
+  .export-grp { grid-template-columns: 1fr; }
+  .logo-title { font-size: 1.25rem; }
+}
+
+/* ── Barra de ação flutuante (FAB) — mobile ── */
+.fab-bar {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 999;
+  background: rgba(10, 12, 18, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  padding: 0.65rem 1rem;
+  padding-bottom: calc(0.65rem + env(safe-area-inset-bottom));
+  display: none;
+  gap: 0.5rem;
+  justify-content: stretch;
+}
+.fab-bar .btn { flex: 1; min-height: 48px; font-size: 0.9rem; }
+
+@media (max-width: 640px) {
+  .fab-bar { display: flex !important; }
+  /* Esconder controles duplicados no card quando FAB estiver visível */
+  #mainCtrlCard { display: none; }
+}
+
+/* ── Modal de permissão de microfone ── */
+.mic-modal-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.mic-modal-overlay.visible { display: flex; animation: fadeIn 0.3s ease; }
+
+.mic-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-acc);
+  border-radius: var(--rl);
+  padding: 2rem 1.75rem;
+  max-width: 420px; width: 100%;
+  text-align: center;
+  box-shadow: 0 0 60px rgba(0,229,255,0.12), 0 24px 60px rgba(0,0,0,0.6);
+}
+
+.mic-modal-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  display: block;
+  animation: mic-pulse 2s ease-in-out infinite;
+}
+@keyframes mic-pulse {
+  0%,100% { transform: scale(1); }
+  50%      { transform: scale(1.12); }
+}
+
+.mic-modal h2 {
+  font-size: 1.35rem; font-weight: 800;
+  margin-bottom: 0.65rem; color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.mic-modal p {
+  font-size: 0.92rem; color: var(--text-second);
+  margin-bottom: 1.25rem; line-height: 1.75;
+  max-height: 50vh;
+  overflow-y: auto;
+  text-align: left;
+  padding-right: 4px;
+}
+.mic-modal p::-webkit-scrollbar { width: 4px; }
+.mic-modal p::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.mic-modal-btns { display: flex; gap: 0.75rem; flex-direction: column; }
+.mic-modal-btns .btn { width: 100%; min-height: 52px; font-size: 1.05rem; }
+
+.mic-status-badge {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.35rem 0.8rem; border-radius: 100px;
+  font-family: var(--font-mono); font-size: 0.75rem;
+  margin-bottom: 1rem;
+}
+.mic-status-badge.granted  { background: rgba(16,185,129,.15); color: var(--success); border: 1px solid rgba(16,185,129,.3); }
+.mic-status-badge.denied   { background: rgba(239,68,68,.12);  color: var(--danger);  border: 1px solid rgba(239,68,68,.3); }
+.mic-status-badge.prompt   { background: rgba(245,158,11,.12); color: var(--warning); border: 1px solid rgba(245,158,11,.3); }
+.mic-status-badge.unknown  { background: rgba(139,92,246,.12); color: var(--purple);  border: 1px solid rgba(139,92,246,.3); }
+
+/* Touch: remove hover states que ficam "presos" em mobile */
+@media (hover: none) {
+  .btn:hover { transform: none !important; }
+  .card:hover { border-color: var(--border) !important; }
+}
+
+/* ══════════════════════════════════════════════════════
+   LAYOUT PRINCIPAL — tela cheia com abas fixas embaixo
+   ══════════════════════════════════════════════════════ */
+
+/* O wrap vira flex-column ocupando toda a viewport */
+.wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;   /* dvh = dynamic viewport height, seguro em mobile */
+  padding: 1.25rem 1.25rem 0 !important; /* zerar padding-bottom: a nav preenche */
+}
+
+/* Zona de conteúdo scrollável (acima das abas fixas) */
+.content-zone {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 0.5rem;
+  scroll-behavior: smooth;
+}
+.content-zone::-webkit-scrollbar { width: 4px; }
+.content-zone::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── Barra de controles de gravação fixa (entre conteúdo e nav) ── */
+.rec-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: rgba(10,12,18,0.97);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.rec-bar .btn {
+  flex: 1;
+  padding: 0.8rem 0.5rem;
+  font-size: 0.92rem;
+  min-height: 48px;
+  gap: 0.4rem;
+}
+
+/* Botão Iniciar se destaca na barra */
+.rec-bar .btn-start {
+  flex: 1.8;
+  font-size: 1rem;
+}
+
+/* Badge de status dentro da rec-bar */
+.live-badge {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  padding: 0.25rem 0.65rem; border-radius: 100px;
+  font-family: var(--font-mono); font-size: 0.65rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  transition: all 0.3s; white-space: nowrap; flex-shrink: 0;
+}
+.live-badge.idle   { background: var(--bg-secondary); color: var(--text-muted); border: 1px solid var(--border); }
+.live-badge.rec    { background: rgba(239,68,68,.15); color: var(--danger); border: 1px solid rgba(239,68,68,.4); animation: blink 1.2s infinite; }
+.live-badge.paused { background: rgba(245,158,11,.12); color: var(--warning); border: 1px solid rgba(245,158,11,.35); }
+.live-badge.done   { background: rgba(16,185,129,.12); color: var(--success); border: 1px solid rgba(16,185,129,.3); }
+
+/* ── Nav de abas fixo no rodapé ── */
+.tab-nav {
+  flex-shrink: 0;
+  display: flex;
+  gap: 0;
+  background: rgba(10,12,18,0.98);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  padding: 4px 4px;
+  padding-bottom: calc(4px + env(safe-area-inset-bottom));
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-nav::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.22rem;
+  padding: 0.55rem 0.4rem;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 60px;
+  position: relative;
+  letter-spacing: -0.01em;
+}
+
+.tab-btn .tab-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--text-second);
+  background: rgba(255,255,255,0.04);
+}
+
+/* Aba ATIVA */
+.tab-btn.active {
+  color: var(--accent);
+  background: rgba(0,229,255,0.08);
+}
+.tab-btn.active .tab-icon { transform: scale(1.18); }
+
+/* Aba transcrição ativa: linha indicadora ciano no topo */
+.tab-btn.tab-primary.active::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 20%; right: 20%;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 0 8px rgba(0,229,255,0.6);
+}
+
+/* Badge de notificação */
+.tab-badge {
+  position: absolute;
+  top: 4px; right: 6px;
+  min-width: 16px; height: 16px;
+  background: var(--danger);
+  color: #fff;
+  border-radius: 100px;
+  font-size: 0.55rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 3px;
+  opacity: 0; transform: scale(0.5);
+  transition: all 0.2s ease;
+}
+.tab-badge.visible { opacity: 1; transform: scale(1); }
+
+/* ── Painéis de conteúdo ── */
+.tab-panel { display: none; animation: tab-in 0.22s ease; }
+.tab-panel.active { display: block; }
+
+@keyframes tab-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Aba Transcrição: área ocupa tudo disponível ── */
+.transcript-area-xl {
+  /* Ocupa viewport menos: header(~80px) + statusbar(~48px) + rec-bar(~68px) + tab-nav(~72px) + card paddings + footer */
+  min-height: calc(100dvh - 360px);
+  max-height: calc(100dvh - 360px);
+}
+
+/* Esconder rec-bar e mainCtrlCard em abas que não sejam transcrição */
+/* (controlado via JS com .rec-bar-hidden) */
+.rec-bar.hidden { display: none; }
+
+/* Esconder card de controles duplicados — controles ficam só na rec-bar */
+#mainCtrlCard { display: none !important; }
+
+/* Controles extras (marcação de falante) em card separado na aba transcrição */
+.spk-card {
+  margin-bottom: 0; /* último card da aba não precisa de margem extra */
+}
+
+/* ── Ajustar wrap para tema claro ── */
+body.theme-light .rec-bar,
+body.theme-light .tab-nav {
+  background: rgba(240,244,255,0.97);
+}
+body.theme-hc .rec-bar,
+body.theme-hc .tab-nav {
+  background: rgba(0,0,0,0.99);
+  border-color: #444;
+}
+
+/* ── Remover FAB antigo (substituído pela rec-bar) ── */
+.fab-bar { display: none !important; }
+
+/* Responsivo */
+@media (max-width: 480px) {
+  .wrap { padding: 0.75rem 0.75rem 0 !important; }
+  .tab-btn { font-size: 0.63rem; min-width: 52px; padding: 0.5rem 0.3rem; }
+  .tab-btn .tab-icon { font-size: 1.2rem; }
+  .rec-bar .btn { font-size: 0.82rem; min-height: 44px; padding: 0.7rem 0.4rem; }
+  .rec-bar .btn-start { font-size: 0.9rem; }
+  .transcript-area-xl {
+    min-height: calc(100dvh - 320px);
+    max-height: calc(100dvh - 320px);
+  }
+}
+@media (max-width: 360px) {
+  .tab-btn { font-size: 0.58rem; min-width: 46px; }
+  .tab-btn .tab-icon { font-size: 1.1rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header>
+  <div>
+    <div class="logo-title">
+      TranscriçãoViva<span class="badge-v2">v2.0</span>
+    </div>
+    <div class="logo-sub">Transcrição Acessível · Deficiência Auditiva · pt-BR</div>
+  </div>
+  <div class="header-right">
+    <div class="pill" id="micPill"><div class="dot"></div><span id="micTxt">Microfone inativo</span></div>
+    <div class="pill" id="savePill" title="Salvo automaticamente"><div class="dot" style="background:var(--success)"></div>Auto-salvo</div>
+    <div class="timer" id="timerDisp">00:00</div>
+  </div>
+</header>
+
+<!-- ══════════════ ZONA DE CONTEÚDO SCROLLÁVEL ══════════════ -->
+<div class="content-zone" id="contentZone">
+
+<!-- ══════════════ RECOVERY BANNER ══════════════ -->
+<div class="recovery-banner" id="recoveryBanner">
+  ⚠️ Sessão anterior recuperada.
+  <button class="btn btn-neu btn-sm" onclick="dismissRecovery()">Restaurar</button>
+  <button class="btn btn-stop btn-sm" onclick="clearAndDismissRecovery()">Descartar</button>
+</div>
+
+<!-- ══════════════ STATUS BAR ══════════════ -->
+<div class="statusbar" id="statusbar">
+  <span>ℹ️</span>
+  <span id="statusTxt">Pronto. Selecione a disciplina e clique em <strong>Iniciar</strong>.</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     ABA 1 — TRANSCRIÇÃO (PRINCIPAL, EM DESTAQUE)
+     ══════════════════════════════════════════════════════ -->
+<div class="tab-panel active" id="panel-transcricao" role="tabpanel" aria-labelledby="tab-transcricao">
+
+  <!-- Área de transcrição — domina a tela -->
+  <div class="card" style="margin-bottom:0.75rem;">
+    <div class="card-title" style="justify-content:space-between;margin-bottom:0.75rem;">
+      <span>Transcrição em Tempo Real</span>
+      <span style="font-size:var(--fs-xs);color:var(--text-muted);">Toque para editar</span>
+    </div>
+    <div class="transcript-area transcript-area-xl" id="transcriptArea">
+      <div class="t-placeholder" id="tPlaceholder">A transcrição aparecerá aqui conforme você fala…</div>
+      <span id="tFinal"></span>
+      <span id="tInterim" class="t-interim"></span>
+    </div>
+    <div class="t-footer">
+      <span id="wordCount">0 palavras · 0 frases</span>
+      <span id="editHint" style="display:none;color:var(--accent);">✏️ Edição ativa</span>
+      <span style="color:var(--success);font-size:var(--fs-xs);" id="autoSaveLbl"></span>
+    </div>
+  </div>
+
+  <!-- Marcação de falante (abaixo da transcrição) -->
+  <div class="card spk-card" style="margin-bottom:0;">
+    <div class="spk-key" style="border:none;padding:0;margin:0;background:transparent;">
+      <strong style="font-size:var(--fs-sm);color:var(--text-second);">Marcar fala:</strong>
+      <div class="spk-key-item">
+        <span class="spk-tag spk-P">P</span>
+        <button class="btn btn-neu btn-sm" onclick="markSpeaker('P')" title="Tecla: P">Professor</button>
+      </div>
+      <div class="spk-key-item">
+        <span class="spk-tag spk-A">A</span>
+        <button class="btn btn-neu btn-sm" onclick="markSpeaker('A')" title="Tecla: A">Aluno</button>
+      </div>
+      <span style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--text-muted);">ou teclas P / A</span>
+    </div>
+  </div>
+
+</div><!-- /panel-transcricao -->
+
+<!-- ══════════════════════════════════════════════════════
+     ABA 2 — ÁUDIO
+     ══════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-audio" role="tabpanel" aria-labelledby="tab-audio">
+
+  <div class="card">
+    <div class="card-title">Monitor de Áudio — Feedback Visual</div>
+    <canvas id="audioCanvas"></canvas>
+    <div class="volume-bar-wrap">
+      <span class="volume-label">Volume:</span>
+      <div class="volume-bar-bg"><div class="volume-bar-fill" id="volFill"></div></div>
+      <span id="volPct" style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--accent);min-width:38px;">0%</span>
+    </div>
+    <div class="pause-alert" id="pauseAlert">
+      ⏸ Professor em pausa longa — aguardando próxima fala…
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Acessibilidade Visual</div>
+    <div class="acc-row">
+      <span class="acc-label">Tema:</span>
+      <div class="seg-group">
+        <button class="seg-btn active" id="themeBtn0" onclick="setTheme('dark',this)">🌙 Escuro</button>
+        <button class="seg-btn" id="themeBtn1" onclick="setTheme('light',this)">☀️ Claro</button>
+        <button class="seg-btn" id="themeBtn2" onclick="setTheme('hc',this)">⬛ Alto Contraste</button>
+      </div>
+    </div>
+    <div class="acc-row">
+      <span class="acc-label">Tamanho da fonte:</span>
+      <input type="range" class="font-slider" id="fontSlider" min="18" max="32" value="20" oninput="setFontSize(this.value)"/>
+      <span class="font-val" id="fontVal">20px</span>
+    </div>
+  </div>
+
+</div><!-- /panel-audio -->
+
+<!-- ══════════════════════════════════════════════════════
+     ABA 3 — CONFIGURAÇÕES
+     ══════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-config" role="tabpanel" aria-labelledby="tab-config">
+
+  <div class="card">
+    <div class="card-title">Disciplina e Vocabulário Técnico</div>
+    <div class="field-row" style="margin-bottom:0.85rem;">
+      <select class="select-field" id="disciplineSelect" onchange="onDisciplineChange()">
+        <option value="">— Selecionar disciplina —</option>
+        <option value="sensoriamento">Sensoriamento Remoto / SIG</option>
+        <option value="agronomia">Agronomia Geral</option>
+        <option value="direito">Direito</option>
+        <option value="custom">Outra (personalizado)</option>
+      </select>
+      <span style="font-family:var(--font-mono);font-size:var(--fs-xs);color:var(--text-muted);align-self:center;">
+        Melhora o resumo e a correção de termos
+      </span>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:0.5rem;">Dicionário de Correções Automáticas</div>
+      <p style="font-size:var(--fs-sm);color:var(--text-second);margin-bottom:0.6rem;font-family:var(--font-mono);">
+        Um par por linha: <code style="color:var(--accent)">termo errado → termo correto</code>
+      </p>
+      <textarea class="textarea-field" id="dictArea" placeholder="senso real → sensorial&#10;georreferência → georreferenciamento&#10;habeas corpus → habeas corpus"></textarea>
+      <div style="margin-top:0.5rem;display:flex;gap:0.6rem;flex-wrap:wrap;">
+        <button class="btn btn-neu btn-sm" onclick="loadPresetDict()">📚 Carregar Preset</button>
+        <button class="btn btn-neu btn-sm" onclick="clearDict()">🗑️ Limpar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Inteligência Artificial — Chave de API</div>
+    <div class="api-row">
+      <select class="select-field" id="apiProvider" style="min-width:200px;">
+        <option value="anthropic">Anthropic (Claude)</option>
+        <option value="openai">OpenAI (GPT)</option>
+        <option value="gemini">Google Gemini</option>
+      </select>
+      <input type="password" class="api-input" id="apiKeyInput" placeholder="Cole sua chave (sk-… | AIza…)" autocomplete="off"/>
+      <button class="btn btn-neu btn-sm" onclick="toggleKey()">👁️ Ver</button>
+    </div>
+    <p class="api-hint">⚠️ A chave permanece apenas nesta aba — nunca enviada a terceiros.</p>
+  </div>
+
+</div><!-- /panel-config -->
+
+<!-- ══════════════════════════════════════════════════════
+     ABA 4 — EXPORTAR
+     ══════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-exportar" role="tabpanel" aria-labelledby="tab-exportar">
+
+  <div class="card">
+    <div class="card-title">Exportar Transcrição</div>
+    <div class="export-grp">
+      <button class="btn btn-neu" onclick="exportTxt()">📄 Baixar .txt</button>
+      <button class="btn btn-neu" onclick="exportJson()">📦 Baixar .json</button>
+      <button class="btn btn-neu" onclick="copyToClipboard()">📋 Copiar texto</button>
+      <button class="btn btn-ai" onclick="copyWithPrompt()" id="btnCopyPrompt"
+              title="Copia a transcrição com prompt pronto para ChatGPT, Gemini ou Claude">
+        🤖 Copiar com Prompt IA
+      </button>
+    </div>
+    <!-- Feedback de cópia com prompt -->
+    <div id="copyPromptFeedback" style="display:none;margin-top:0.85rem;padding:0.85rem 1rem;border-radius:var(--r);background:rgba(139,92,246,0.1);border:1px solid rgba(139,92,246,0.3);font-family:var(--font-mono);font-size:var(--fs-sm);">
+      <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+        <span style="color:var(--purple);font-weight:700;">✅ Copiado!</span>
+        <span style="color:var(--text-second);">Cole no ChatGPT, Gemini, Claude ou outro chat de IA.</span>
+      </div>
+      <div style="color:var(--text-muted);font-size:var(--fs-xs);">
+        O prompt orienta a IA a corrigir a transcrição e gerar um resumo estruturado.
+      </div>
+      <div style="margin-top:0.65rem;display:flex;gap:0.6rem;flex-wrap:wrap;">
+        <a href="https://chatgpt.com" target="_blank" class="btn btn-neu btn-sm">↗ ChatGPT</a>
+        <a href="https://gemini.google.com" target="_blank" class="btn btn-neu btn-sm">↗ Gemini</a>
+        <a href="https://claude.ai" target="_blank" class="btn btn-neu btn-sm">↗ Claude</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /panel-exportar -->
+
+<!-- ══════════════════════════════════════════════════════
+     ABA 5 — RESUMO IA
+     ══════════════════════════════════════════════════════ -->
+<div class="tab-panel" id="panel-resumo" role="tabpanel" aria-labelledby="tab-resumo">
+
+  <div class="card">
+    <div class="card-title">Resumo Gerado por Inteligência Artificial</div>
+    <div style="display:flex;gap:0.7rem;flex-wrap:wrap;margin-bottom:1rem;">
+      <button class="btn btn-ai" id="btnSummary" onclick="generateSummary()">✨ Gerar Resumo com IA</button>
+      <button class="btn btn-export-sum" id="btnExportSum" onclick="exportSummaryTxt()" disabled>📋 Exportar (.txt)</button>
+    </div>
+    <div class="ai-loader" id="aiLoader"><div class="spinner"></div><span>Gerando resumo… aguarde.</span></div>
+    <div class="summary-box" id="summaryBox"></div>
+  </div>
+
+</div><!-- /panel-resumo -->
+
+</div><!-- /content-zone -->
+
+<!-- ══════════════ BARRA DE CONTROLES DE GRAVAÇÃO (linha fixa) ══════════════ -->
+<div class="rec-bar" id="recBar">
+  <button class="btn btn-start" id="btnStart" onclick="startTranscription()">🎙️ Iniciar</button>
+  <button class="btn btn-pause" id="btnPause" onclick="pauseTranscription()" disabled>⏸️ Pausar</button>
+  <button class="btn btn-stop"  id="btnStop"  onclick="stopTranscription()"  disabled>⏹️ Parar</button>
+  <button class="btn btn-neu"   onclick="clearTranscript()" title="Limpar transcrição">🗑️</button>
+  <span class="live-badge idle" id="liveBadge">● Stand-by</span>
+</div>
+
+<!-- ══════════════ NAVEGAÇÃO POR ABAS (rodapé fixo) ══════════════ -->
+<nav class="tab-nav" role="tablist" aria-label="Seções do aplicativo">
+  <button class="tab-btn tab-primary active" id="tab-transcricao"
+          role="tab" aria-selected="true" aria-controls="panel-transcricao"
+          onclick="switchTab('transcricao')">
+    <span class="tab-icon">🎙️</span>
+    Transcrição
+  </button>
+  <button class="tab-btn" id="tab-audio"
+          role="tab" aria-selected="false" aria-controls="panel-audio"
+          onclick="switchTab('audio')">
+    <span class="tab-icon">📊</span>
+    Áudio
+  </button>
+  <button class="tab-btn" id="tab-config"
+          role="tab" aria-selected="false" aria-controls="panel-config"
+          onclick="switchTab('config')">
+    <span class="tab-icon">⚙️</span>
+    Config
+  </button>
+  <button class="tab-btn" id="tab-exportar"
+          role="tab" aria-selected="false" aria-controls="panel-exportar"
+          onclick="switchTab('exportar')">
+    <span class="tab-icon">📤</span>
+    Exportar
+    <span class="tab-badge" id="badge-exportar">!</span>
+  </button>
+  <button class="tab-btn" id="tab-resumo"
+          role="tab" aria-selected="false" aria-controls="panel-resumo"
+          onclick="switchTab('resumo')">
+    <span class="tab-icon">✨</span>
+    Resumo IA
+    <span class="tab-badge" id="badge-resumo">✓</span>
+  </button>
+</nav>
+
+</div><!-- /wrap -->
+
+<!-- FAB legado removido — substituído pela rec-bar -->
+
+<!-- ══════════════ MODAL DE PERMISSÃO DE MICROFONE ══════════════ -->
+<div class="mic-modal-overlay" id="micModalOverlay">
+  <div class="mic-modal" role="dialog" aria-modal="true" aria-labelledby="micModalTitle">
+    <span class="mic-modal-icon" id="micModalIcon">🎙️</span>
+    <div id="micStatusBadge"></div>
+    <h2 id="micModalTitle">Permissão de Microfone</h2>
+    <p id="micModalMsg">
+      Para transcrever a aula em tempo real, o aplicativo precisa acessar o microfone do seu dispositivo.
+      Clique em <strong>Permitir Microfone</strong> e aceite a solicitação do navegador.
+    </p>
+    <div class="mic-modal-btns">
+      <button class="btn btn-start" id="micModalBtn" onclick="requestMicFromModal()">🎙️ Permitir Microfone</button>
+      <button class="btn btn-neu" onclick="closeMicModal()">Agora não</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     JAVASCRIPT PRINCIPAL
+     ════════════════════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ──────────────────────────────────────────────────────────────
+   DICIONÁRIOS PRESET POR DISCIPLINA
+   ────────────────────────────────────────────────────────────── */
+const PRESETS = {
+  sensoriamento: `senso real → sensorial
+senso rio → sensório
+senso rimento → sensoriamento
+sensoriamento real → sensoriamento remoto
+s.i.g → SIG
+sistema de informação geográfica → Sistema de Informação Geográfica
+georreferência → georreferenciamento
+georreferenciamento → georreferenciamento
+índice de vegetação → NDVI
+NDVI → NDVI
+raster → raster
+vetor → vetor
+pixel → pixel
+resolução espacial → resolução espacial
+resolução temporal → resolução temporal
+landsat → Landsat
+sentinel → Sentinel
+modis → MODIS
+drone → drone
+vant → VANT
+lidar → LiDAR
+gps → GPS
+datum → datum
+projeção cartográfica → projeção cartográfica
+coordenadas geográficas → coordenadas geográficas
+shapefile → shapefile
+qgis → QGIS
+arcgis → ArcGIS
+google earth → Google Earth Engine
+análise multitemporal → análise multitemporal
+classificação supervisionada → classificação supervisionada
+agricultura de precisão → agricultura de precisão`,
+
+  agronomia: `adubação → adubação
+fertilização → fertilização
+irrigação → irrigação
+solo → solo
+cultivo → cultivo
+plantio → plantio
+colheita → colheita
+defensivo → defensivo
+pesticida → pesticida
+herbicida → herbicida
+fungicida → fungicida
+inseticida → inseticida
+manejo integrado → manejo integrado de pragas
+fito → fito
+fisiologia vegetal → fisiologia vegetal
+genética → genética
+melhoramento → melhoramento genético`,
+
+  direito: `habeas corpus → habeas corpus
+mandado de segurança → mandado de segurança
+recurso → recurso
+apelação → apelação
+agravo → agravo
+embargo → embargos
+litispendência → litispendência
+coisa julgada → coisa julgada
+contraditório → contraditório
+ampla defesa → ampla defesa
+due process → devido processo legal
+tutela → tutela
+liminar → liminar
+cautelar → medida cautelar
+jurisprudência → jurisprudência
+doutrina → doutrina
+código civil → Código Civil
+código penal → Código Penal
+constituição federal → Constituição Federal
+stf → STF
+stj → STJ
+trt → TRT
+art → art.
+artigo → art.
+parágrafo único → parágrafo único
+inciso → inciso`,
+
+  custom: ''
+};
+
+/* Contextos de disciplina para o prompt de resumo */
+const DISC_CONTEXT = {
+  sensoriamento: 'A aula é de Sensoriamento Remoto e SIG (Sistemas de Informação Geográfica), área de agronomia/geociências. Priorize: siglas técnicas (NDVI, SIG, VANT, LiDAR, GPS), nomes de softwares (QGIS, ArcGIS), sensores e satélites (Landsat, Sentinel, MODIS), metodologias de análise espacial e conceitos de georreferenciamento.',
+  agronomia: 'A aula é de Agronomia. Priorize: manejo de solo e culturas, insumos agrícolas, fisiologia vegetal, melhoramento genético, técnicas de irrigação e colheita.',
+  direito: 'A aula é de Direito. Priorize: artigos de lei (com numeração), princípios constitucionais, institutos jurídicos, nomes de tribunais e recursos processuais. Identifique se a aula é de Direito Civil, Penal, Processual, Constitucional ou outro ramo.',
+  custom: 'A aula é de uma disciplina acadêmica geral.',
+  '': 'A aula é de uma disciplina acadêmica.'
+};
+
+/* ──────────────────────────────────────────────────────────────
+   ESTADO DA APLICAÇÃO
+   ────────────────────────────────────────────────────────────── */
+const S = {
+  recognition:       null,
+  isRecording:       false,
+  isPaused:          false,
+  finalTranscript:   '',
+  sentences:         [],           // { text, speaker, ts }
+  currentSpeaker:    'P',          // 'P' professor | 'A' aluno
+  timerInterval:     null,
+  seconds:           0,
+  silenceTimer:      null,
+  SILENCE_MS:        4000,
+  summaryGenerated:  false,
+  summaryText:       '',
+  audioCtx:          null,
+  analyser:          null,
+  animFrame:         null,
+  mediaStream:       null,
+  pauseAlertTimer:   null,
+  editingPhrase:     false,
+  autoSaveInterval:  null,
+};
+
+/* ──────────────────────────────────────────────────────────────
+   REFERÊNCIAS DOM
+   ────────────────────────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const el = {
+  tArea:     $('transcriptArea'),
+  tFinal:    $('tFinal'),
+  tInterim:  $('tInterim'),
+  tPh:       $('tPlaceholder'),
+  wc:        $('wordCount'),
+  sb:        $('statusbar'),
+  stxt:      $('statusTxt'),
+  micPill:   $('micPill'),
+  micTxt:    $('micTxt'),
+  timer:     $('timerDisp'),
+  btnStart:  $('btnStart'),
+  btnPause:  $('btnPause'),
+  btnStop:   $('btnStop'),
+  btnSum:    $('btnSummary'),
+  btnExpSum: $('btnExportSum'),
+  apiKey:    $('apiKeyInput'),
+  apiProv:   $('apiProvider'),
+  loader:    $('aiLoader'),
+  sumBox:    $('summaryBox'),
+  dictArea:  $('dictArea'),
+  disc:      $('disciplineSelect'),
+  canvas:    $('audioCanvas'),
+  volFill:   $('volFill'),
+  volPct:    $('volPct'),
+  pauseAlert:$('pauseAlert'),
+  recovery:  $('recoveryBanner'),
+  editHint:  $('editHint'),
+  saveLbl:   $('autoSaveLbl'),
+};
+
+/* ──────────────────────────────────────────────────────────────
+   WEB SPEECH API — CHECK
+   ────────────────────────────────────────────────────────────── */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SR) {
+  setStatus('err', '⚠️ Web Speech API não suportada. Use o Google Chrome (versão 33+).');
+  el.btnStart.disabled = true;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   ACESSIBILIDADE — TEMA E FONTE
+   ────────────────────────────────────────────────────────────── */
+function setTheme(t, btn) {
+  document.body.className = t === 'dark' ? '' : `theme-${t}`;
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  localStorage.setItem('tv2_theme', t);
+}
+
+function setFontSize(v) {
+  document.documentElement.style.setProperty('--fs-base', v + 'px');
+  $('fontVal').textContent = v + 'px';
+  localStorage.setItem('tv2_font', v);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   DICIONÁRIO DE CORREÇÃO AUTOMÁTICA
+   ────────────────────────────────────────────────────────────── */
+function parseDictionary() {
+  const lines = el.dictArea.value.split('\n');
+  const dict = [];
+  for (const line of lines) {
+    const parts = line.split('→');
+    if (parts.length === 2) {
+      const from = parts[0].trim().toLowerCase();
+      const to   = parts[1].trim();
+      if (from && to) dict.push({ from, to });
+    }
+  }
+  return dict;
+}
+
+function applyDictionary(text) {
+  const dict = parseDictionary();
+  let result = text;
+  for (const { from, to } of dict) {
+    // Substituição case-insensitive, preservando limites de palavra
+    const re = new RegExp(`\\b${escapeRegex(from)}\\b`, 'gi');
+    result = result.replace(re, to);
+  }
+  return result;
+}
+
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function onDisciplineChange() {
+  const val = el.disc.value;
+  if (val && PRESETS[val]) loadPresetDict();
+}
+
+function loadPresetDict() {
+  const val = el.disc.value;
+  if (!val || !PRESETS[val]) { alert('Selecione uma disciplina primeiro.'); return; }
+  el.dictArea.value = PRESETS[val];
+}
+
+function clearDict() { el.dictArea.value = ''; }
+
+/* ──────────────────────────────────────────────────────────────
+   VISUALIZADOR DE ÁUDIO — Canvas Waveform
+   ────────────────────────────────────────────────────────────── */
+async function initAudio(stream) {
+  try {
+    S.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    S.analyser = S.audioCtx.createAnalyser();
+    S.analyser.fftSize = 256;
+    const src = S.audioCtx.createMediaStreamSource(stream);
+    src.connect(S.analyser);
+    drawWaveform();
+  } catch(e) {
+    console.warn('AudioContext não disponível:', e);
+  }
+}
+
+function drawWaveform() {
+  if (!S.analyser) return;
+  const canvas = el.canvas;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth;
+  const H = canvas.offsetHeight;
+  canvas.width  = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  ctx.scale(devicePixelRatio, devicePixelRatio);
+
+  const buf = new Uint8Array(S.analyser.frequencyBinCount);
+
+  function draw() {
+    S.animFrame = requestAnimationFrame(draw);
+    S.analyser.getByteTimeDomainData(buf);
+
+    const bg = getComputedStyle(document.documentElement).getPropertyValue('--bg-secondary').trim() || '#0e1118';
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Calcular volume RMS
+    let rms = 0;
+    for (let i = 0; i < buf.length; i++) rms += Math.pow((buf[i] - 128) / 128, 2);
+    rms = Math.sqrt(rms / buf.length);
+    const pct = Math.min(100, Math.round(rms * 400));
+
+    el.volFill.style.width = pct + '%';
+    el.volPct.textContent  = pct + '%';
+
+    // Cor da barra por nível
+    el.volFill.style.background =
+      pct > 80 ? 'linear-gradient(90deg,var(--danger),#ff8800)' :
+      pct > 40 ? 'linear-gradient(90deg,var(--success),var(--accent))' :
+                 'linear-gradient(90deg,var(--text-muted),var(--success))';
+
+    // Waveform
+    ctx.lineWidth   = 2;
+    ctx.strokeStyle = pct > 60 ? '#00e5ff' : '#10b981';
+    ctx.shadowBlur  = 8;
+    ctx.shadowColor = pct > 60 ? 'rgba(0,229,255,.5)' : 'rgba(16,185,129,.4)';
+    ctx.beginPath();
+    const slice = W / buf.length;
+    let x = 0;
+    for (let i = 0; i < buf.length; i++) {
+      const v = buf[i] / 128;
+      const y = (v * H) / 2;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      x += slice;
+    }
+    ctx.stroke();
+  }
+  draw();
+}
+
+function stopAudio() {
+  if (S.animFrame) { cancelAnimationFrame(S.animFrame); S.animFrame = null; }
+  if (S.audioCtx)  { S.audioCtx.close().catch(()=>{}); S.audioCtx = null; }
+  if (S.mediaStream) { S.mediaStream.getTracks().forEach(t => t.stop()); S.mediaStream = null; }
+  S.analyser = null;
+  el.volFill.style.width = '0%';
+  el.volPct.textContent  = '0%';
+  // Limpar canvas
+  const ctx = el.canvas.getContext('2d');
+  ctx.clearRect(0, 0, el.canvas.width, el.canvas.height);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   MARCAÇÃO DE FALANTE
+   ────────────────────────────────────────────────────────────── */
+function markSpeaker(who) {
+  S.currentSpeaker = who;
+  setStatus(S.isRecording ? 'rec' : 'idle',
+    `🎙️ Próximas falas marcadas como: <strong>${who === 'P' ? 'Professor' : 'Aluno'}</strong>`);
+}
+
+// Teclas de atalho P / A durante gravação
+document.addEventListener('keydown', e => {
+  if (S.editingPhrase) return;
+  if (e.key === 'p' || e.key === 'P') markSpeaker('P');
+  if (e.key === 'a' || e.key === 'A') markSpeaker('A');
+});
+
+/* ──────────────────────────────────────────────────────────────
+   INICIAR TRANSCRIÇÃO
+   ────────────────────────────────────────────────────────────── */
+async function startTranscription() {
+  if (S.isRecording && !S.isPaused) return;
+
+  // Retomar do pause
+  if (S.isPaused) {
+    S.isPaused = false;
+    try { S.recognition.start(); } catch(e) {}
+    setStatus('rec', '🎙️ Transcrição retomada.');
+    setLiveBadge('rec');
+    updateBtns({ rec: true, pau: false });
+    setMic(true);
+    startTimer();
+    return;
+  }
+
+  // Solicitar microfone + iniciar AudioContext
+  // (este ponto é alcançado via clique do usuário — gesto válido)
+  try {
+    S.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    await initAudio(S.mediaStream);
+  } catch(e) {
+    if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+      showMicModal('denied');
+    } else if (e.name === 'NotFoundError' || e.name === 'NotReadableError'
+            || e.name === 'DevicesNotFoundError') {
+      showMicModal('unavailable');
+    } else if (e.name === 'SecurityError') {
+      showMicModal('insecure');
+    } else {
+      showMicModal('error', e.message || e.name);
+    }
+    return;
+  }
+
+  const rec = new SR();
+  S.recognition = rec;
+  rec.lang            = 'pt-BR';
+  rec.continuous      = true;
+  rec.interimResults  = true;
+  rec.maxAlternatives = 3;   // pegar mais alternativas aumenta precisão
+
+  rec.onresult = e => {
+    resetSilenceTimer();
+    hidePauseAlert();
+    let interim = '';
+    let newFinal = '';
+
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      // Pegar melhor alternativa entre as 3
+      const best = pickBestAlternative(e.results[i]);
+      if (e.results[i].isFinal) {
+        const cleaned = applyDictionary(cleanText(best));
+        newFinal += cleaned + ' ';
+        S.sentences.push({ text: cleaned, speaker: S.currentSpeaker, ts: Date.now() });
+        updateWordCount();
+        autoSave();
+      } else {
+        interim += best;
+      }
+    }
+
+    if (newFinal) {
+      S.finalTranscript += newFinal;
+      appendPhrase(newFinal.trim(), S.currentSpeaker);
+    }
+    el.tInterim.textContent = interim ? interim + '…' : '';
+    scrollBottom();
+  };
+
+  rec.onstart = () => {
+    S.isRecording = true;
+    S.isPaused    = false;
+    setStatus('rec', '🔴 Gravando… Fale agora!');
+    setMic(true);
+    setLiveBadge('rec');
+    updateBtns({ rec: true, pau: false });
+    startTimer();
+    hidePlaceholder();
+    startSilenceTimer();
+  };
+
+  rec.onend = () => {
+    if (S.isRecording && !S.isPaused) {
+      try { rec.start(); } catch(e) {}
+    }
+  };
+
+  rec.onerror = e => {
+    const msgs = {
+      'not-allowed': '🚫 Microfone bloqueado. Permita o acesso e tente novamente.',
+      'no-speech':   '🔇 Nenhuma fala detectada. Continue falando…',
+      'audio-capture': '🎤 Microfone não encontrado.',
+      'network':     '🌐 Erro de rede — verifique sua conexão.',
+      'aborted':     '',
+    };
+    const msg = msgs[e.error] || '';
+    if (msg) setStatus('err', msg);
+    if (e.error === 'not-allowed') stopTranscription();
+  };
+
+  try { rec.start(); } catch(e) {
+    setStatus('err', '❌ Erro ao iniciar: ' + e.message);
+  }
+}
+
+/* Escolhe melhor alternativa considerando dicionário */
+function pickBestAlternative(result) {
+  // Se só há uma alternativa, retornar ela
+  if (result.length === 1) return result[0].transcript;
+  // Preferir a que tem maior confiança
+  let best = result[0].transcript;
+  let bestConf = result[0].confidence || 0;
+  for (let i = 1; i < result.length; i++) {
+    if ((result[i].confidence || 0) > bestConf) {
+      bestConf = result[i].confidence;
+      best = result[i].transcript;
+    }
+  }
+  return best;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   PAUSAR / PARAR
+   ────────────────────────────────────────────────────────────── */
+function pauseTranscription() {
+  if (!S.isRecording || S.isPaused) return;
+  S.isPaused = true;
+  S.recognition.stop();
+  setStatus('pau', '⏸️ Pausado.');
+  setMic(false);
+  updateBtns({ rec: true, pau: true });
+  stopTimer();
+  clearSilenceTimer();
+  el.tInterim.textContent = '';
+  hidePauseAlert();
+}
+
+function stopTranscription() {
+  if (!S.isRecording) return;
+  S.isRecording = false; S.isPaused = false;
+  if (S.recognition) { S.recognition.stop(); S.recognition = null; }
+  stopAudio();
+  setStatus('ok', `✅ Transcrição encerrada. ${S.sentences.length} frases · ${fmtTime(S.seconds)}`);
+  setMic(false);
+  setLiveBadge('done');
+  notifyTab('exportar', S.sentences.length);
+  updateBtns({ rec: false, pau: false });
+  stopTimer();
+  clearSilenceTimer();
+  hidePauseAlert();
+  el.tInterim.textContent = '';
+}
+
+/* ──────────────────────────────────────────────────────────────
+   SILÊNCIO / ALERTA DE PAUSA LONGA
+   ────────────────────────────────────────────────────────────── */
+function startSilenceTimer() {
+  clearSilenceTimer();
+  S.silenceTimer = setTimeout(() => {
+    if (S.isRecording && !S.isPaused) {
+      appendParagraphBreak();
+      showPauseAlert();
+    }
+  }, S.SILENCE_MS);
+}
+function resetSilenceTimer() { clearSilenceTimer(); startSilenceTimer(); }
+function clearSilenceTimer()  { clearTimeout(S.silenceTimer); S.silenceTimer = null; }
+
+function showPauseAlert() {
+  el.pauseAlert.classList.add('visible');
+  clearTimeout(S.pauseAlertTimer);
+  S.pauseAlertTimer = setTimeout(hidePauseAlert, 8000);
+}
+function hidePauseAlert() { el.pauseAlert.classList.remove('visible'); }
+
+/* ──────────────────────────────────────────────────────────────
+   DOM — TRANSCRIÇÃO
+   ────────────────────────────────────────────────────────────── */
+function appendPhrase(text, speaker) {
+  if (!text) return;
+
+  const wrap = document.createElement('span');
+  wrap.className = 't-phrase phrase-new';
+
+  // Tag de falante
+  const tag = document.createElement('span');
+  tag.className = `spk-tag spk-${speaker}`;
+  tag.textContent = speaker;
+  wrap.appendChild(tag);
+
+  // Texto
+  const txt = document.createTextNode(text + ' ');
+  wrap.appendChild(txt);
+
+  // Edição inline ao clicar
+  wrap.addEventListener('click', () => enablePhraseEdit(wrap));
+
+  el.tFinal.appendChild(wrap);
+}
+
+function enablePhraseEdit(wrap) {
+  wrap.contentEditable = 'true';
+  wrap.focus();
+  S.editingPhrase = true;
+  el.editHint.style.display = 'inline';
+
+  const finish = () => {
+    wrap.contentEditable = 'false';
+    S.editingPhrase = false;
+    el.editHint.style.display = 'none';
+    // Atualizar transcript a partir do DOM
+    rebuildTranscriptFromDOM();
+  };
+  wrap.addEventListener('blur', finish, { once: true });
+  wrap.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); wrap.blur(); } });
+}
+
+function rebuildTranscriptFromDOM() {
+  // Recontruir o texto final a partir das frases editadas
+  const phrases = el.tFinal.querySelectorAll('.t-phrase');
+  let rebuilt = '';
+  phrases.forEach(p => {
+    // Pegar apenas nós de texto, excluindo a tag de falante
+    const texts = Array.from(p.childNodes)
+      .filter(n => n.nodeType === 3)
+      .map(n => n.textContent).join('').trim();
+    if (texts) rebuilt += texts + ' ';
+  });
+  S.finalTranscript = rebuilt.trim();
+  updateWordCount();
+}
+
+function appendParagraphBreak() {
+  if (!S.finalTranscript.trim()) return;
+  const br = document.createElement('span');
+  br.className = 't-para';
+  el.tFinal.appendChild(br);
+}
+
+function hidePlaceholder() { el.tPh.style.display = 'none'; }
+function scrollBottom() { el.tArea.scrollTop = el.tArea.scrollHeight; }
+
+function updateWordCount() {
+  const w = S.finalTranscript.trim().split(/\s+/).filter(Boolean).length;
+  el.wc.textContent = `${w} palavras · ${S.sentences.length} frases`;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   AUTO-SAVE — localStorage
+   ────────────────────────────────────────────────────────────── */
+const LS_KEY = 'tv2_session';
+
+function autoSave() {
+  try {
+    const data = {
+      transcript:  S.finalTranscript,
+      sentences:   S.sentences,
+      seconds:     S.seconds,
+      savedAt:     new Date().toISOString(),
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(data));
+    el.saveLbl.textContent = '💾 Salvo ' + new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  } catch(e) { /* Storage cheio ou bloqueado */ }
+}
+
+function loadSavedSession() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!data.transcript || !data.transcript.trim()) return;
+    // Mostrar banner de recuperação
+    el.recovery.classList.add('visible');
+    el.recovery._data = data;
+  } catch(e) {}
+}
+
+function dismissRecovery() {
+  const data = el.recovery._data;
+  if (!data) return;
+  S.finalTranscript = data.transcript;
+  S.sentences       = data.sentences || [];
+  S.seconds         = data.seconds || 0;
+  el.tPh.style.display = 'none';
+
+  // Re-renderizar frases no DOM
+  el.tFinal.innerHTML = '';
+  for (const s of S.sentences) {
+    appendPhrase(s.text, s.speaker || 'P');
+  }
+  updateWordCount();
+  el.timer.textContent = fmtTime(S.seconds);
+  el.recovery.classList.remove('visible');
+  setStatus('ok', '✅ Sessão anterior restaurada com sucesso.');
+}
+
+function clearAndDismissRecovery() {
+  localStorage.removeItem(LS_KEY);
+  el.recovery.classList.remove('visible');
+}
+
+/* ──────────────────────────────────────────────────────────────
+   LIMPAR TUDO
+   ────────────────────────────────────────────────────────────── */
+function clearTranscript() {
+  if (S.isRecording) stopTranscription();
+  S.finalTranscript = ''; S.sentences = []; S.seconds = 0;
+  el.tFinal.innerHTML = ''; el.tInterim.textContent = '';
+  el.tPh.style.display = 'block';
+  el.timer.textContent = '00:00';
+  updateWordCount();
+  S.summaryGenerated = false; S.summaryText = '';
+  el.sumBox.classList.remove('visible');
+  el.btnExpSum.disabled = true;
+  el.sumBox.innerHTML = '';
+  localStorage.removeItem(LS_KEY);
+  el.saveLbl.textContent = '';
+  setLiveBadge('idle');
+  setStatus('idle', 'Tudo limpo. Pronto para nova sessão.');
+}
+
+/* ──────────────────────────────────────────────────────────────
+   TIMER
+   ────────────────────────────────────────────────────────────── */
+function startTimer() {
+  stopTimer();
+  S.timerInterval = setInterval(() => {
+    S.seconds++;
+    el.timer.textContent = fmtTime(S.seconds);
+  }, 1000);
+}
+function stopTimer() { clearInterval(S.timerInterval); S.timerInterval = null; }
+function fmtTime(s) {
+  const m = String(Math.floor(s / 60)).padStart(2,'0');
+  const ss = String(s % 60).padStart(2,'0');
+  return `${m}:${ss}`;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   TEXTO — LIMPEZA E PONTUAÇÃO
+   ────────────────────────────────────────────────────────────── */
+function cleanText(t) {
+  t = t.trim();
+  if (!t) return '';
+  t = t.charAt(0).toUpperCase() + t.slice(1);
+  if (!/[.!?]$/.test(t)) t += '.';
+  return t;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   COPIAR PARA CLIPBOARD
+   ────────────────────────────────────────────────────────────── */
+async function copyToClipboard() {
+  if (!S.finalTranscript.trim()) { alert('Nenhuma transcrição para copiar.'); return; }
+  try {
+    await navigator.clipboard.writeText(S.finalTranscript.trim());
+    setStatus('ok', '📋 Transcrição copiada para a área de transferência!');
+  } catch(e) {
+    alert('Não foi possível copiar automaticamente. Use Ctrl+A e Ctrl+C na área de transcrição.');
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   COPIAR COM PROMPT PARA IA EXTERNA
+   ────────────────────────────────────────────────────────────── */
+async function copyWithPrompt() {
+  if (!S.finalTranscript.trim()) {
+    alert('Nenhuma transcrição disponível. Grave o áudio da aula primeiro.');
+    return;
+  }
+
+  // Informações de contexto
+  const discEl   = document.getElementById('disciplineSelect');
+  const discName = discEl.options[discEl.selectedIndex]?.text || 'disciplina acadêmica';
+  const discVal  = discEl.value;
+  const duration = document.getElementById('timerDisp').textContent;
+  const words    = S.finalTranscript.trim().split(/\s+/).filter(Boolean).length;
+  const date     = new Date().toLocaleString('pt-BR');
+
+  // Contexto específico da disciplina
+  const discCtx = DISC_CONTEXT[discVal] || DISC_CONTEXT[''];
+
+  // Transcrição com marcação de falante
+  const transcriptFormatted = S.sentences.length > 0
+    ? S.sentences.map(s => `[${s.speaker === 'P' ? 'Professor' : 'Aluno'}] ${s.text}`).join('\n')
+    : S.finalTranscript.trim();
+
+  // ── Prompt estruturado ──────────────────────────────────────
+  const prompt = `Você é um assistente especializado em produzir resumos acadêmicos a partir de transcrições de aulas. O destinatário deste resumo é um estudante com deficiência auditiva, que depende exclusivamente do texto para acompanhar o conteúdo da aula. Por isso, a qualidade, clareza e precisão do resumo são essenciais.
+
+═══════════════════════════════════════
+CONTEXTO DA AULA
+═══════════════════════════════════════
+Disciplina  : ${discName}
+Data/hora   : ${date}
+Duração     : ${duration}
+Palavras    : ${words}
+${discCtx}
+
+═══════════════════════════════════════
+INSTRUÇÕES PARA O RESUMO
+═══════════════════════════════════════
+1. CORRIJA imperfeições da transcrição automática (palavras trocadas, termos técnicos mal reconhecidos, repetições por falha de reconhecimento de voz).
+2. IDENTIFIQUE e corrija termos técnicos da disciplina que possam ter sido transcritos incorretamente.
+3. ORGANIZE o resumo com as seguintes seções obrigatórias:
+
+   ### 📌 Título da Aula
+   (estime um título com base no conteúdo)
+
+   ### 📋 Resumo Geral
+   (parágrafo único de 5 a 8 linhas com os pontos centrais da aula, já com as imperfeições da transcrição corrigidas — termos técnicos ajustados, repetições removidas e sentido preservado)
+
+   ### 🗂️ Tópicos Abordados
+   (lista dos principais assuntos em ordem de apresentação)
+
+   ### 📖 Desenvolvimento
+   (resumo detalhado de cada tópico, com subtítulos e bullet points)
+
+   ### 🔑 Termos e Conceitos-Chave
+   (glossário dos termos técnicos identificados, com breve definição quando possível)
+
+   ### ❓ Para Fixar
+   (3 a 5 perguntas de revisão sobre o conteúdo da aula)
+
+   ### 📝 Observações do Professor
+   (anotações, avisos, datas de entrega ou informações práticas mencionadas)
+
+4. Use linguagem acadêmica clara e objetiva.
+5. Responda SEMPRE em português brasileiro.
+6. Se algum trecho da transcrição estiver incompreensível, indique com [trecho ininteligível] e continue o resumo.
+
+═══════════════════════════════════════
+TRANSCRIÇÃO DA AULA
+═══════════════════════════════════════
+${transcriptFormatted}
+
+═══════════════════════════════════════
+Gere agora o resumo estruturado seguindo todas as instruções acima.`;
+
+  // Copiar para clipboard
+  try {
+    await navigator.clipboard.writeText(prompt);
+    // Mostrar feedback
+    const fb = document.getElementById('copyPromptFeedback');
+    fb.style.display = 'block';
+    fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    setStatus('ok', '🤖 Prompt copiado! Cole em qualquer chat de IA para gerar o resumo.');
+    // Esconder feedback após 20s
+    setTimeout(() => { fb.style.display = 'none'; }, 20000);
+  } catch(e) {
+    // Fallback: abrir em nova janela de texto
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write('<pre style="font-family:monospace;font-size:14px;padding:20px;white-space:pre-wrap;">' + prompt.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>');
+      win.document.title = 'Prompt para IA — TranscriçãoViva';
+      setStatus('ok', '🤖 Prompt aberto em nova aba. Selecione tudo (Ctrl+A) e copie (Ctrl+C).');
+    } else {
+      alert('Não foi possível copiar automaticamente. Permita pop-ups ou use outro navegador.');
+    }
+  }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   EXPORTAR
+   ────────────────────────────────────────────────────────────── */
+function exportTxt() {
+  if (!S.finalTranscript.trim()) { alert('Nenhuma transcrição para exportar.'); return; }
+  const lines = [
+    '════════════════════════════════════',
+    '       TRANSCRIÇÃO DE AULA',
+    '════════════════════════════════════',
+    `Data/hora : ${new Date().toLocaleString('pt-BR')}`,
+    `Duração   : ${fmtTime(S.seconds)}`,
+    `Palavras  : ${S.finalTranscript.trim().split(/\s+/).filter(Boolean).length}`,
+    `Frases    : ${S.sentences.length}`,
+    `Disciplina: ${el.disc.options[el.disc.selectedIndex]?.text || '—'}`,
+    '',
+    '─── TRANSCRIÇÃO COMPLETA ───────────',
+    '',
+  ];
+
+  // Incluir marcação de falante
+  for (const s of S.sentences) {
+    lines.push(`[${s.speaker}] ${s.text}`);
+  }
+
+  dlFile(lines.join('\n'), 'transcricao.txt', 'text/plain');
+}
+
+function exportJson() {
+  if (!S.finalTranscript.trim()) { alert('Nenhuma transcrição para exportar.'); return; }
+  const data = {
+    meta: {
+      exportedAt:  new Date().toISOString(),
+      duration:    fmtTime(S.seconds),
+      wordCount:   S.finalTranscript.trim().split(/\s+/).filter(Boolean).length,
+      sentenceCount: S.sentences.length,
+      discipline:  el.disc.value,
+    },
+    fullTranscript: S.finalTranscript.trim(),
+    sentences: S.sentences,
+    summary:   S.summaryText || null,
+  };
+  dlFile(JSON.stringify(data, null, 2), 'transcricao.json', 'application/json');
+}
+
+function exportSummaryTxt() {
+  if (!S.summaryText) return;
+  const content = [
+    '════════════════════════════════════',
+    '         RESUMO DA AULA',
+    '════════════════════════════════════',
+    `Gerado em : ${new Date().toLocaleString('pt-BR')}`,
+    `Disciplina: ${el.disc.options[el.disc.selectedIndex]?.text || '—'}`,
+    '',
+    S.summaryText,
+  ].join('\n');
+  dlFile(content, 'resumo-aula.txt', 'text/plain');
+}
+
+function dlFile(content, name, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = name; a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ──────────────────────────────────────────────────────────────
+   GERAR RESUMO COM IA
+   ────────────────────────────────────────────────────────────── */
+async function generateSummary() {
+  const key = el.apiKey.value.trim();
+  if (!key) { alert('⚠️ Insira sua chave de API antes de gerar o resumo.'); el.apiKey.focus(); return; }
+
+  const transcript = S.finalTranscript.trim();
+  if (transcript.length < 80) { alert('⚠️ Transcrição muito curta. Grave mais conteúdo.'); return; }
+
+  el.loader.classList.add('visible');
+  el.sumBox.classList.remove('visible');
+  el.btnSum.disabled = true;
+  el.btnSum.textContent = '⏳ Gerando…';
+
+  const disc    = el.disc.value;
+  const discCtx = DISC_CONTEXT[disc] || DISC_CONTEXT[''];
+
+  const systemPrompt = `Você é um assistente especializado em produzir resumos acadêmicos estruturados a partir de transcrições de aulas, voltados para estudantes com deficiência auditiva que dependem exclusivamente do texto para acompanhar o conteúdo.
+
+${discCtx}
+
+REGRAS DE FORMATAÇÃO (obrigatórias):
+- Responda SEMPRE em português brasileiro formal.
+- Comece com um título da aula (estimado a partir do conteúdo).
+- Divida em seções com ### Título da Seção.
+- Use bullet points (- item) para listar conceitos, exemplos e pontos-chave.
+- Corrija implicitamente erros de transcrição que sejam óbvios pelo contexto.
+- Ao final inclua uma seção ### Termos-Chave com os principais termos técnicos identificados.
+- Inclua uma seção ### Para Fixar com 3-5 perguntas de revisão curtas sobre o conteúdo.
+- Seja objetivo e preciso. Não invente conteúdo que não esteja na transcrição.`;
+
+  const userPrompt = `Transcrição da aula (com marcação de falante — P=Professor, A=Aluno):\n\n${
+    S.sentences.map(s => `[${s.speaker}] ${s.text}`).join('\n')
+  }\n\nGere o resumo estruturado conforme as instruções.`;
+
+  const prov = el.apiProv.value;
+
+  // Mapeia provedor → função de chamada
+  const callers = { anthropic: callAnthropic, openai: callOpenAI, gemini: callGemini };
+
+  try {
+    const rawText = await (callers[prov] || callAnthropic)(key, systemPrompt, userPrompt);
+    renderSummary(rawText);
+  } catch(e) {
+    const msg = e.message || String(e);
+    setStatus('err', `❌ <strong>Erro ao gerar resumo:</strong> ${msg}`);
+    // Mostrar erro também dentro do card de resumo para maior visibilidade
+    el.sumBox.innerHTML = `<div style="color:var(--danger);font-family:var(--font-mono);font-size:0.9rem;padding:1rem;border:1px solid rgba(239,68,68,.3);border-radius:var(--r);background:rgba(239,68,68,.06);">
+      ⚠️ <strong>Falha na chamada à API</strong><br><br>${msg}<br><br>
+      <span style="color:var(--text-second);">Dicas:<br>
+      • Confirme que copiou a chave completa (sem espaços)<br>
+      • Para Gemini: gere a chave em <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent);">aistudio.google.com</a><br>
+      • Verifique se a chave tem a API "Generative Language" habilitada no Google Cloud<br>
+      • Tente com outro provedor (Anthropic ou OpenAI)</span>
+    </div>`;
+    el.sumBox.classList.add('visible');
+    el.loader.classList.remove('visible');
+    el.btnSum.disabled = false;
+    el.btnSum.textContent = '✨ Gerar Resumo com IA';
+  }
+}
+
+async function callAnthropic(key, system, user) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      system,
+      messages: [{ role: 'user', content: user }],
+    }),
+  });
+  if (!r.ok) { const d = await r.json().catch(()=>({})); throw new Error(d.error?.message || `HTTP ${r.status}`); }
+  const d = await r.json();
+  return d.content?.[0]?.text || '';
+}
+
+async function callGemini(key, system, user) {
+  // Google Gemini 2.0 Flash via REST API
+  const model = 'gemini-2.0-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+
+  // Gemini recebe system instruction separado do conteúdo do usuário
+  const body = {
+    systemInstruction: { parts: [{ text: system }] },
+    contents: [{ role: 'user', parts: [{ text: user }] }],
+    generationConfig: {
+      maxOutputTokens: 2048,
+      temperature: 0.3,
+      responseMimeType: 'text/plain',
+    },
+    safetySettings: [
+      { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' },
+    ],
+  };
+
+  let r;
+  try {
+    r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch (netErr) {
+    throw new Error('Falha de rede ao contatar a API do Gemini: ' + netErr.message);
+  }
+
+  // Tratar erros HTTP com mensagem descritiva
+  if (!r.ok) {
+    let msg = `HTTP ${r.status}`;
+    try {
+      const errData = await r.json();
+      msg = errData?.error?.message || errData?.error?.status || msg;
+    } catch(_) {}
+    if (r.status === 400) throw new Error('Chave de API inválida ou requisição malformada. Verifique a chave do Gemini. (' + msg + ')');
+    if (r.status === 403) throw new Error('Acesso negado. A chave não tem permissão para usar a API Gemini. (' + msg + ')');
+    if (r.status === 429) throw new Error('Limite de requisições atingido. Aguarde alguns segundos e tente novamente.');
+    throw new Error('Erro na API Gemini: ' + msg);
+  }
+
+  const d = await r.json();
+
+  // Verificar bloqueio por safety filters
+  const candidate = d.candidates?.[0];
+  if (!candidate) {
+    const blockReason = d.promptFeedback?.blockReason;
+    throw new Error('Gemini não retornou resposta.' + (blockReason ? ' Motivo: ' + blockReason : ' Verifique se a chave está ativa no Google AI Studio.'));
+  }
+
+  const finishReason = candidate.finishReason;
+  if (finishReason === 'SAFETY') {
+    throw new Error('O conteúdo foi bloqueado pelos filtros de segurança do Gemini. Tente reduzir o tamanho da transcrição ou use outro provedor.');
+  }
+  if (finishReason === 'RECITATION') {
+    throw new Error('Gemini recusou gerar o conteúdo por política de citação. Use outro provedor.');
+  }
+
+  const text = candidate?.content?.parts?.map(p => p.text || '').join('') || '';
+  if (!text.trim()) {
+    throw new Error('Gemini retornou resposta vazia. Verifique se a chave está ativa e se há créditos disponíveis no Google AI Studio.');
+  }
+  return text;
+}
+
+async function callOpenAI(key, system, user) {
+  const r = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${key}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o',
+      max_tokens: 2000,
+      temperature: 0.3,
+      messages: [{ role: 'system', content: system }, { role: 'user', content: user }],
+    }),
+  });
+  if (!r.ok) { const d = await r.json().catch(()=>({})); throw new Error(d.error?.message || `HTTP ${r.status}`); }
+  const d = await r.json();
+  return d.choices?.[0]?.message?.content || '';
+}
+
+/* ──────────────────────────────────────────────────────────────
+   RENDERIZAR RESUMO
+   ────────────────────────────────────────────────────────────── */
+function renderSummary(raw) {
+  S.summaryText      = raw;
+  S.summaryGenerated = true;
+
+  // Markdown → HTML (básico)
+  let html = raw
+    .replace(/^#### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^### (.+)$/gm,  '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,   '<h3>$1</h3>')
+    .replace(/^# (.+)$/gm,    '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,     '<em>$1</em>')
+    .replace(/^- (.+)$/gm,    '<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>\n?)+/g, m => `<ul>${m}</ul>`)
+    .replace(/\n\n/g, '</p><p>');
+
+  el.sumBox.innerHTML = `<p>${html}</p>`;
+  el.sumBox.classList.add('visible');
+  el.loader.classList.remove('visible');
+  el.btnSum.disabled   = false;
+  el.btnSum.textContent = '🔄 Regenerar Resumo';
+  el.btnExpSum.disabled = false;
+
+  setStatus('ok', '✅ Resumo gerado com sucesso!');
+  notifyTab('resumo', '✓');
+  el.sumBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* ──────────────────────────────────────────────────────────────
+   UI — STATUS / MIC / BOTÕES
+   ────────────────────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────────────────────
+   SISTEMA DE ABAS
+   ────────────────────────────────────────────────────────────── */
+const TABS = ['transcricao','audio','config','exportar','resumo'];
+
+function switchTab(name) {
+  TABS.forEach(t => {
+    const btn   = document.getElementById('tab-' + t);
+    const panel = document.getElementById('panel-' + t);
+    if (!btn || !panel) return;
+    const isActive = t === name;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive);
+    panel.classList.toggle('active', isActive);
+  });
+
+  // rec-bar: visível apenas na aba de transcrição
+  const recBar = document.getElementById('recBar');
+  if (recBar) recBar.classList.toggle('hidden', name !== 'transcricao');
+
+  // Rolar conteúdo ao topo ao trocar aba
+  const zone = document.getElementById('contentZone');
+  if (zone) zone.scrollTop = 0;
+
+  // Redimensionar canvas se abrir aba de áudio
+  if (name === 'audio') {
+    setTimeout(() => { if (S.analyser) drawWaveform(); }, 50);
+  }
+
+  // Limpar badge ao abrir a aba
+  const badge = document.getElementById('badge-' + name);
+  if (badge) badge.classList.remove('visible');
+}
+
+/* Atualizar live badge dentro da aba de transcrição */
+function setLiveBadge(state) {
+  const b = document.getElementById('liveBadge');
+  if (!b) return;
+  const map = {
+    idle:   { cls: 'idle',   txt: '● Aguardando' },
+    rec:    { cls: 'rec',    txt: '● AO VIVO' },
+    paused: { cls: 'paused', txt: '⏸ Pausado' },
+    done:   { cls: 'done',   txt: '✓ Encerrado' },
+  };
+  const cfg = map[state] || map.idle;
+  b.className = 'live-badge ' + cfg.cls;
+  b.textContent = cfg.txt;
+}
+
+/* Mostrar badge de notificação em outra aba */
+function notifyTab(name, text) {
+  const badge = document.getElementById('badge-' + name);
+  if (!badge) return;
+  badge.textContent = text || '!';
+  badge.classList.add('visible');
+}
+
+function setStatus(type, msg) {
+  el.sb.className = 'statusbar' + (type !== 'idle' ? ` ${type}` : '');
+  el.stxt.innerHTML = msg;
+}
+
+function setMic(active) {
+  el.micPill.className = 'pill' + (active ? ' active' : '');
+  el.micTxt.textContent = active ? 'Microfone ativo' : 'Microfone inativo';
+}
+
+function updateBtns({ rec, pau }) {
+  el.btnStart.disabled = rec && !pau;
+  el.btnStart.textContent = pau ? '▶️ Retomar' : '🎙️ Iniciar Transcrição';
+  el.btnPause.disabled = !rec || pau;
+  el.btnStop.disabled  = !rec;
+  syncFab({ rec, pau });
+}
+
+function toggleKey() {
+  el.apiKey.type = el.apiKey.type === 'password' ? 'text' : 'password';
+}
+
+/* ──────────────────────────────────────────────────────────────
+   MODAL DE MICROFONE
+   ────────────────────────────────────────────────────────────── */
+function showMicModal(state, msg) {
+  const overlay = $('micModalOverlay');
+  const icon    = $('micModalIcon');
+  const badge   = $('micStatusBadge');
+  const title   = $('micModalTitle');
+  const msgEl   = $('micModalMsg');
+  const btn     = $('micModalBtn');
+
+  const configs = {
+    prompt: {
+      icon: '🎙️', badgeTxt: 'Permissão necessária', badgeCls: 'prompt',
+      title: 'Permitir uso do Microfone',
+      msg: 'Para transcrever a aula em tempo real, o aplicativo precisa acessar o microfone do dispositivo.<br><br>'
+         + 'Clique em <strong>Solicitar Permissão</strong> e, quando o navegador perguntar, escolha <strong>Permitir</strong>.',
+      btnTxt: '🎙️ Solicitar Permissão', btnShow: true,
+    },
+    denied: {
+      icon: '🚫', badgeTxt: 'Acesso negado', badgeCls: 'denied',
+      title: 'Microfone Bloqueado',
+      msg: 'O acesso ao microfone foi negado. Siga as instruções abaixo para desbloquear:'
+         + '<br><br><strong>📱 Android (Chrome):</strong><br>'
+         + '1. Toque no ícone 🔒 na barra de endereço<br>'
+         + '2. Toque em <em>Permissões</em> → <em>Microfone</em> → <em>Permitir</em><br>'
+         + '3. Recarregue a página'
+         + '<br><br><strong>🍎 iPhone / iPad (Safari):</strong><br>'
+         + '1. Abra <em>Ajustes</em> → <em>Safari</em> → <em>Microfone</em><br>'
+         + '2. Selecione <em>Permitir</em><br>'
+         + '3. Ou: Ajustes → Privacidade → Microfone → ative Safari'
+         + '<br><br><strong>🍎 iPhone / iPad (Chrome):</strong><br>'
+         + '1. Ajustes → Chrome → Microfone → ativar'
+         + '<br><br><strong>💻 Desktop (Chrome/Edge):</strong><br>'
+         + '1. Clique no ícone 🔒 ou 🎙️ na barra de endereço<br>'
+         + '2. Mude Microfone para <em>Permitir</em><br>'
+         + '3. Recarregue a página',
+      btnTxt: '🔄 Já desbloqueei — Tentar novamente', btnShow: true,
+    },
+    granted: {
+      icon: '✅', badgeTxt: 'Microfone disponível', badgeCls: 'granted',
+      title: 'Microfone Pronto!',
+      msg: 'O microfone foi autorizado com sucesso. Clique em <strong>Iniciar Transcrição</strong> para começar.',
+      btnTxt: '🎙️ Iniciar Transcrição Agora', btnShow: true,
+    },
+    unavailable: {
+      icon: '⚠️', badgeTxt: 'Microfone não encontrado', badgeCls: 'unknown',
+      title: 'Microfone Não Detectado',
+      msg: 'Nenhum microfone foi encontrado no dispositivo.<br><br>'
+         + '• Conecte um fone de ouvido com microfone integrado<br>'
+         + '• Ou conecte um microfone USB/P2<br>'
+         + '• Verifique se o dispositivo de áudio está habilitado nas configurações do sistema<br><br>'
+         + 'Após conectar, clique em <strong>Verificar Novamente</strong>.',
+      btnTxt: '🔄 Verificar Novamente', btnShow: true,
+    },
+    insecure: {
+      icon: '🔐', badgeTxt: 'Contexto inseguro', badgeCls: 'denied',
+      title: 'Conexão Não Segura',
+      msg: 'O microfone só pode ser acessado em páginas seguras (HTTPS) ou em <em>localhost</em>.<br><br>'
+         + 'Para usar o aplicativo:<br>'
+         + '• Acesse via <strong>HTTPS</strong> (URL começando com https://)<br>'
+         + '• Ou abra o arquivo localmente no computador<br>'
+         + '• Não é possível usar em HTTP simples por restrição do navegador',
+      btnTxt: '', btnShow: false,
+    },
+    error: {
+      icon: '❌', badgeTxt: 'Erro de acesso', badgeCls: 'denied',
+      title: 'Erro ao Acessar Microfone',
+      msg: `Ocorreu um erro inesperado: <code style="color:var(--accent);font-size:0.85rem;">${msg || 'desconhecido'}</code><br><br>`
+         + 'Tente:<br>'
+         + '• Fechar outras abas ou aplicativos que usem o microfone<br>'
+         + '• Verificar se o microfone não está em uso por outro programa<br>'
+         + '• Recarregar a página',
+      btnTxt: '🔄 Tentar Novamente', btnShow: true,
+    },
+  };
+
+  const cfg = configs[state] || configs.prompt;
+  icon.textContent = cfg.icon;
+  badge.innerHTML  = `<span class="mic-status-badge ${cfg.badgeCls}">${cfg.badgeTxt}</span>`;
+  title.textContent = cfg.title;
+  msgEl.innerHTML   = cfg.msg;
+  btn.textContent   = cfg.btnTxt;
+  btn.style.display = cfg.btnShow ? 'flex' : 'none';
+
+  // Para estado "granted" com início imediato
+  if (state === 'granted') {
+    btn.onclick = () => { closeMicModal(); startTranscription(); };
+  } else if (state === 'denied' || state === 'unavailable') {
+    btn.onclick = () => { closeMicModal(); checkMicPermission(true); };
+  } else {
+    btn.onclick = requestMicFromModal;
+  }
+
+  overlay.classList.add('visible');
+}
+
+function closeMicModal() {
+  $('micModalOverlay').classList.remove('visible');
+}
+
+/* requestMicFromModal: DEVE ser chamado diretamente por um clique do usuário.
+   Nunca fechar o modal antes de pedir — o gesto precisa estar ativo. */
+async function requestMicFromModal() {
+  // Não fechar o modal ainda — manter o contexto de interação do usuário
+  const btn = $('micModalBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Aguardando…'; }
+
+  try {
+    // getUserMedia DEVE ser chamado dentro do handler de clique (contexto de gesto)
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // Parar o stream de teste — startTranscription abrirá o seu próprio
+    stream.getTracks().forEach(t => t.stop());
+    // Permissão concedida
+    closeMicModal();
+    setStatus('ok', '✅ Microfone autorizado! Clique em <strong>Iniciar Transcrição</strong>.');
+    setMic(false);
+    // Monitorar revogação futura
+    watchPermissionChange();
+  } catch(e) {
+    // Reabilitar botão
+    if (btn) { btn.disabled = false; }
+    if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+      showMicModal('denied');
+    } else if (e.name === 'NotFoundError'  || e.name === 'DevicesNotFoundError'
+            || e.name === 'NotReadableError') {
+      showMicModal('unavailable');
+    } else if (e.name === 'SecurityError') {
+      showMicModal('insecure');
+    } else {
+      showMicModal('error', e.message || e.name || 'Erro desconhecido');
+    }
+  }
+}
+
+/* Verifica o estado ATUAL da permissão SEM solicitar acesso.
+   Mostra o banner informativo certo para cada situação.
+   Chamado automaticamente no carregamento — NÃO solicita microfone. */
+async function checkMicPermission() {
+  // ── Caso 1: Permissions API disponível (Chrome, Edge, Firefox) ──
+  if (navigator.permissions) {
+    try {
+      const perm = await navigator.permissions.query({ name: 'microphone' });
+
+      if (perm.state === 'granted') {
+        // Já autorizado — sem modal, apenas atualizar indicador
+        setStatus('ok', '✅ Microfone disponível. Clique em <strong>Iniciar Transcrição</strong>.');
+        watchPermissionChange();
+        return;
+      }
+
+      if (perm.state === 'denied') {
+        // Bloqueado pelo usuário ou pelo sistema
+        showMicModal('denied');
+        watchPermissionChange();
+        return;
+      }
+
+      // 'prompt' — nunca foi solicitado; mostrar banner informativo
+      // (NÃO chamar getUserMedia aqui — só quando o usuário clicar)
+      showMicModal('prompt');
+      watchPermissionChange();
+      return;
+    } catch (_) {
+      // Permissions API não suporta 'microphone' neste browser — seguir para fallback
+    }
+  }
+
+  // ── Caso 2: Safari / browsers sem Permissions API ──
+  // Verificar se há microfone sem pedir acesso
+  if (navigator.mediaDevices?.enumerateDevices) {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      // Se labels estão preenchidos, permissão já foi concedida antes
+      const mics = devices.filter(d => d.kind === 'audioinput');
+      if (mics.length === 0) {
+        showMicModal('unavailable');
+        return;
+      }
+      const alreadyGranted = mics.some(d => d.label && d.label !== '');
+      if (alreadyGranted) {
+        setStatus('ok', '✅ Microfone disponível. Clique em <strong>Iniciar Transcrição</strong>.');
+        return;
+      }
+      // Tem microfone mas sem permissão confirmada
+      showMicModal('prompt');
+    } catch (_) {
+      showMicModal('prompt');
+    }
+  } else {
+    showMicModal('prompt');
+  }
+}
+
+/* Monitorar mudanças de permissão em tempo real */
+async function watchPermissionChange() {
+  if (!navigator.permissions) return;
+  try {
+    const perm = await navigator.permissions.query({ name: 'microphone' });
+    perm.onchange = () => {
+      if (perm.state === 'granted') {
+        closeMicModal();
+        setStatus('ok', '✅ Microfone autorizado!');
+        setMic(false);
+      }
+      if (perm.state === 'denied') {
+        showMicModal('denied');
+        if (S.isRecording) stopTranscription();
+      }
+    };
+  } catch(_) {}
+}
+
+/* ──────────────────────────────────────────────────────────────
+   FAB — SINCRONIZAR BOTÕES FLUTUANTES COM ESTADO
+   ────────────────────────────────────────────────────────────── */
+function syncFab({ rec, pau }) {
+  // Sincronizar rec-bar (mesmos IDs dos botões principais)
+  // updateBtns já cuida disso — syncFab mantido por compatibilidade
+}
+
+/* ──────────────────────────────────────────────────────────────
+   INICIALIZAÇÃO
+   ────────────────────────────────────────────────────────────── */
+(function init() {
+  updateBtns({ rec: false, pau: false });
+  syncFab({ rec: false, pau: false });
+  updateWordCount();
+  loadSavedSession();
+
+  // Restaurar preferências
+  const savedTheme = localStorage.getItem('tv2_theme');
+  if (savedTheme && savedTheme !== 'dark') {
+    const btns = document.querySelectorAll('.seg-btn');
+    const map  = { light: 1, hc: 2 };
+    if (map[savedTheme] !== undefined) {
+      setTheme(savedTheme, btns[map[savedTheme]]);
+    }
+  }
+  const savedFont = localStorage.getItem('tv2_font');
+  if (savedFont) {
+    $('fontSlider').value = savedFont;
+    setFontSize(savedFont);
+  }
+
+  // Ativar aba de transcrição
+  switchTab('transcricao');
+
+  // Verificar estado da permissão após breve delay para UI renderizar
+  // checkMicPermission() apenas LÊ o estado — não solicita acesso
+  setTimeout(checkMicPermission, 800);
+
+  // Aviso ao sair com transcrição não salva
+  window.addEventListener('beforeunload', e => {
+    if (S.finalTranscript.trim() && S.isRecording) {
+      e.preventDefault(); e.returnValue = '';
+    }
+  });
+})();
+</script>
+</body>
+</html>
